@@ -1,5 +1,7 @@
 # 进度日志
 
+- TDD RED verified: `moon test --deny-warn` fails because the intended `Date` type and API are not yet defined; the failure is the expected missing-feature diagnostic.
+
 ## 2026-08-08
 
 - 通过 `moon new` 临时脚手架核对 `moon.mod` 格式；模块初始化检查通过。当前 0.10.4 的 `moon fmt`/`moon info` 不接受 `--deny-warn`，已记录为工具链兼容性差异。
