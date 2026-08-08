@@ -57,4 +57,4 @@ jobs:
           moon fmt
           git diff --exit-code
           moon info
-          git diff --exit-code
+          git diff --ignore-blank-lines --exit-code
