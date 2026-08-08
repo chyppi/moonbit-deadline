@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "chyppi/moonbit-deadline"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Date {
+  year : Int
+  month : Int
+  day : Int
+} derive(Compare, Eq, @debug.Debug)
+pub fn Date::add_days(Self, Int) -> Self
+pub fn Date::add_months(Self, Int) -> Self
+pub fn Date::add_years(Self, Int) -> Self
+pub fn Date::new(year~ : Int, month~ : Int, day~ : Int) -> Result[Self, DateError]
+pub fn Date::parse(String) -> Result[Self, DateError]
+pub fn Date::to_string(Self) -> String
+pub fn Date::weekday(Self) -> Weekday
+
+pub enum DateError {
+  InvalidYear
+  InvalidMonth
+  InvalidDay
+  InvalidFormat
+  InvalidNumber
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum Weekday {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+} derive(Compare, Eq, @debug.Debug)
+pub fn Weekday::is_monday(Self) -> Bool
+
+// Type aliases
+
+// Traits
+

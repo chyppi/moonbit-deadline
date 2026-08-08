@@ -8,7 +8,7 @@ repository = "https://github.com/chyppi/moonbit-deadline"
 
 license = "MIT"
 
-keywords = ["deadline", "legal", "calendar", "business-day", "moonbit"]
+keywords = [ "deadline", "legal", "calendar", "business-day", "moonbit" ]
 
 preferred_target = "wasm-gc"
 

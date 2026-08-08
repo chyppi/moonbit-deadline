@@ -37,7 +37,7 @@ test "date arithmetic clamps a month end" {
 ///|
 test "date reports a stable weekday" {
   match Date::parse("2026-08-10") {
-    Ok(date) => inspect(date.weekday(), content="Monday")
+    Ok(date) => inspect(date.weekday().is_monday(), content="true")
     Err(_) => inspect(false, content="true")
   }
 }
