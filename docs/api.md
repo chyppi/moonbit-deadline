@@ -21,4 +21,4 @@ This order models common “调休” data while making the precedence visible a
 
 `Deadline::calculate` first evaluates the rule, records the natural result, then applies the selected `ExtensionPolicy`. `DateRule::Sequence` applies the start-date convention only to its first stage, so later stages begin at the previous stage's result. The returned `DeadlineResult` retains structured `CalculationStep` values as well as `explain()` text.
 
-Negative rule counts are rejected. Calendar searches are bounded and report `CalendarError` instead of looping forever when a malformed calendar cannot provide a result.
+Negative rule counts are rejected. Calendar searches stop at the valid `Date` range and report `DateOutOfRange` instead of constructing an invalid date or looping forever.

@@ -20,4 +20,5 @@
 - CLI implemented and verified with parser tests, sequence rules, calendar selection and an explanation-mode smoke test.
 - Added an explicit China 2026 calendar fixture with holiday and extra-workday tests; README records the official source and the production-data boundary.
 - Added MIT license, README, changelog, contribution guide and a three-OS CI workflow based on the MoonBit community template.
-- Current local result: 20 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.
+- Current local result: 27 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.
+- Review fixes: checked date arithmetic now returns `OutOfRange`, calendar search no longer has a fixed 3660-day ceiling, deadline results expose audit metadata and step accessors, and month/year rules apply the start-date convention.

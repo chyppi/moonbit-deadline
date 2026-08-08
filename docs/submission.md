@@ -8,7 +8,7 @@ This file records the local evidence prepared for the August 2026 MoonBit hackat
 | Open-source license | `LICENSE`, `license = "MIT"` | ready |
 | Core implementation | root `.mbt` modules and generated `pkg.generated.mbti` | ready |
 | CLI and examples | `cmd/deadline`, `README.md` | ready |
-| Tests | 20 tests across wasm, wasm-gc, js and native | verified locally |
+| Tests | 27 tests across wasm, wasm-gc, js and native | verified locally |
 | CI | `.github/workflows/ci.yml`, Ubuntu/macOS/Windows | ready |
 | Calendar provenance | `sample_calendar.mbt`, `docs/calendar-data.md` | ready |
 | Change traceability | `CHANGELOG.md`, focused commits, `progress.md` | ready |

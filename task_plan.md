@@ -38,5 +38,5 @@
 | 创建 `codex/moonbit-deadline` 分支时 `.git/HEAD.lock` 权限不足 | `git switch -c codex/moonbit-deadline` | 工作树写入可用但 Git 元数据只读；待需要提交时申请受控 Git 权限 |
 - Core date, calendar, deadline engine, CLI and China 2026 fixture are implemented.
 - README, MIT license, changelog, contribution guide and cross-platform CI are present.
-- Local verification currently passes for all four targets with 20 tests; final remote creation, Mooncakes publication preparation and OSC2026 audit remain.
+- Local verification currently passes for all four targets with 27 tests; final remote synchronization, Mooncakes publication preparation and OSC2026 audit remain.
 - The installed toolchain accepts `check/test --deny-warn` but rejects `fmt/info --deny-warn`; the repository documents and gates the supported equivalent until the requested toolchain exposes those flags.
