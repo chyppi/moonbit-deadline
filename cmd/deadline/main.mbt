@@ -7,6 +7,7 @@ fn main {
       println(
         "usage: moon run cmd/deadline -- --start YYYY-MM-DD --rule calendar-days:10",
       )
+      panic()
     }
   }
 }
