@@ -18,6 +18,19 @@ pub fn Weekday::is_monday(self : Weekday) -> Bool {
 }
 
 ///|
+pub fn Weekday::to_string(self : Weekday) -> String {
+  match self {
+    Monday => "Monday"
+    Tuesday => "Tuesday"
+    Wednesday => "Wednesday"
+    Thursday => "Thursday"
+    Friday => "Friday"
+    Saturday => "Saturday"
+    Sunday => "Sunday"
+  }
+}
+
+///|
 pub enum DateError {
   InvalidYear
   InvalidMonth

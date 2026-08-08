@@ -24,6 +24,7 @@ pub struct Calendar {
   extra_workdays : Array[Date]
 } derive(@debug.Debug)
 pub fn Calendar::advance_business_days(Self, Date, Int, include_start? : Bool) -> Result[Date, CalendarError]
+pub fn Calendar::china_2026() -> Self
 pub fn Calendar::is_business_day(Self, Date) -> Bool
 pub fn Calendar::name(Self) -> String
 pub fn Calendar::new(name~ : String, version~ : String, weekend~ : WeekendPolicy, holidays~ : Array[Date], extra_workdays~ : Array[Date]) -> Self
@@ -134,6 +135,7 @@ pub enum Weekday {
   Sunday
 } derive(Compare, Eq, @debug.Debug)
 pub fn Weekday::is_monday(Self) -> Bool
+pub fn Weekday::to_string(Self) -> String
 
 pub enum WeekendPolicy {
   SaturdaySunday
