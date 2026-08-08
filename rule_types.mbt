@@ -35,7 +35,7 @@ pub fn DateRule::years(count : Int) -> DateRule {
 
 ///|
 pub fn DateRule::sequence(rules : Array[DateRule]) -> DateRule {
-  Sequence(rules)
+  Sequence(rules.copy())
 }
 
 ///|

@@ -15,6 +15,9 @@ pub struct CalculationStep {
   date : Date
   note : String
 } derive(@debug.Debug)
+pub fn CalculationStep::date(Self) -> Date
+pub fn CalculationStep::kind(Self) -> StepKind
+pub fn CalculationStep::note(Self) -> String
 
 pub struct Calendar {
   name : String
@@ -35,7 +38,7 @@ pub fn Calendar::version(Self) -> String
 
 pub enum CalendarError {
   NegativeBusinessDayCount
-  SearchLimitExceeded
+  DateOutOfRange
 } derive(Compare, Eq, @debug.Debug)
 
 pub struct Date {
@@ -49,9 +52,13 @@ pub fn Date::add_years(Self, Int) -> Self
 pub fn Date::new(year~ : Int, month~ : Int, day~ : Int) -> Result[Self, DateError]
 pub fn Date::parse(String) -> Result[Self, DateError]
 pub fn Date::to_string(Self) -> String
+pub fn Date::try_add_days(Self, Int) -> Result[Self, DateError]
+pub fn Date::try_add_months(Self, Int) -> Result[Self, DateError]
+pub fn Date::try_add_years(Self, Int) -> Result[Self, DateError]
 pub fn Date::weekday(Self) -> Weekday
 
 pub enum DateError {
+  OutOfRange
   InvalidYear
   InvalidMonth
   InvalidDay
@@ -87,17 +94,28 @@ pub fn Deadline::new(start_date~ : Date, rule~ : DateRule, start_rule~ : StartDa
 pub enum DeadlineError {
   NegativeRuleCount
   CalendarFailure(CalendarError)
+  DateFailure(DateError)
 } derive(@debug.Debug)
 
 pub struct DeadlineResult {
+  start : Date
+  rule : DateRule
   original : Date
   adjusted : Date
+  adjustment_count : Int
+  crossed_month : Bool
+  crossed_year : Bool
   steps : Array[CalculationStep]
   explanation : String
 } derive(@debug.Debug)
 pub fn DeadlineResult::adjusted_date(Self) -> Date
+pub fn DeadlineResult::adjustment_count(Self) -> Int
+pub fn DeadlineResult::crossed_month(Self) -> Bool
+pub fn DeadlineResult::crossed_year(Self) -> Bool
 pub fn DeadlineResult::explain(Self) -> String
 pub fn DeadlineResult::original_date(Self) -> Date
+pub fn DeadlineResult::rule(Self) -> DateRule
+pub fn DeadlineResult::start_date(Self) -> Date
 pub fn DeadlineResult::steps(Self) -> Array[CalculationStep]
 
 pub enum ExtensionPolicy {

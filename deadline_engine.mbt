@@ -26,8 +26,17 @@ pub fn Deadline::calculate(
     steps.push({ kind: Complete, date: adjusted, note: "adjusted deadline" })
   }
   Ok({
+    start: self.start_date,
+    rule: self.rule,
     original,
     adjusted,
+    adjustment_count: if adjusted == original {
+      0
+    } else {
+      1
+    },
+    crossed_month: self.start_date.month != adjusted.month,
+    crossed_year: self.start_date.year != adjusted.year,
     steps: steps.copy(),
     explanation: render_steps(steps),
   })
@@ -61,9 +70,17 @@ fn evaluate_rule(
       }
       let include_start = start_rule == Include
       let offset = if include_start && count > 0 { count - 1 } else { count }
-      let result = start.add_days(offset)
-      steps.push({ kind: Count, date: result, note: "calendar days: \{count}" })
-      Ok(result)
+      match start.try_add_days(offset) {
+        Ok(result) => {
+          steps.push({
+            kind: Count,
+            date: result,
+            note: "calendar days: \{count}",
+          })
+          Ok(result)
+        }
+        Err(error) => Err(DateFailure(error))
+      }
     }
     BusinessDays(count) => {
       if count < 0 {
@@ -92,21 +109,43 @@ fn evaluate_rule(
       if count < 0 {
         return Err(NegativeRuleCount)
       }
-      let result = start.add_months(count)
-      steps.push({
-        kind: Count,
-        date: result,
-        note: "calendar months: \{count}",
-      })
-      Ok(result)
+      let offset = if start_rule == Include && count > 0 {
+        count - 1
+      } else {
+        count
+      }
+      match start.try_add_months(offset) {
+        Ok(result) => {
+          steps.push({
+            kind: Count,
+            date: result,
+            note: "calendar months: \{count}",
+          })
+          Ok(result)
+        }
+        Err(error) => Err(DateFailure(error))
+      }
     }
     Years(count) => {
       if count < 0 {
         return Err(NegativeRuleCount)
       }
-      let result = start.add_years(count)
-      steps.push({ kind: Count, date: result, note: "calendar years: \{count}" })
-      Ok(result)
+      let offset = if start_rule == Include && count > 0 {
+        count - 1
+      } else {
+        count
+      }
+      match start.try_add_years(offset) {
+        Ok(result) => {
+          steps.push({
+            kind: Count,
+            date: result,
+            note: "calendar years: \{count}",
+          })
+          Ok(result)
+        }
+        Err(error) => Err(DateFailure(error))
+      }
     }
   }
 }

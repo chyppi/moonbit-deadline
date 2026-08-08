@@ -90,3 +90,104 @@ test "sequence applies the first start rule once" {
     Err(_) => inspect(false, content="true")
   }
 }
+
+///|
+test "month and year rules honor an included start date" {
+  let calendar = Calendar::standard()
+  let month_deadline = Deadline::new(
+    start_date=Date::parse("2026-01-31").unwrap(),
+    rule=DateRule::months(1),
+    start_rule=StartDateRule::including_start(),
+    calendar~,
+    extension=ExtensionPolicy::no_extension(),
+  )
+  let year_deadline = Deadline::new(
+    start_date=Date::parse("2024-02-29").unwrap(),
+    rule=DateRule::years(1),
+    start_rule=StartDateRule::including_start(),
+    calendar~,
+    extension=ExtensionPolicy::no_extension(),
+  )
+  inspect(
+    month_deadline.calculate().unwrap().adjusted_date().to_string(),
+    content="2026-01-31",
+  )
+  inspect(
+    year_deadline.calculate().unwrap().adjusted_date().to_string(),
+    content="2024-02-29",
+  )
+}
+
+///|
+test "deadline result exposes audit fields and step details" {
+  let deadline = Deadline::new(
+    start_date=Date::parse("2026-08-08").unwrap(),
+    rule=DateRule::calendar_days(1),
+    start_rule=StartDateRule::exclude(),
+    calendar=Calendar::standard(),
+    extension=ExtensionPolicy::following(),
+  )
+  let result = deadline.calculate().unwrap()
+  inspect(result.start_date().to_string(), content="2026-08-08")
+  inspect(result.adjustment_count(), content="1")
+  inspect(result.crossed_month(), content="false")
+  let steps = result.steps()
+  match steps[0].kind() {
+    Start => inspect(true, content="true")
+    _ => inspect(false, content="true")
+  }
+  inspect(steps[0].date().to_string(), content="2026-08-08")
+  inspect(steps[0].note(), content="start date")
+}
+
+///|
+test "weeks and empty sequences have explicit semantics" {
+  let weekly = Deadline::new(
+    start_date=Date::parse("2026-08-07").unwrap(),
+    rule=DateRule::weeks(1),
+    start_rule=StartDateRule::exclude(),
+    calendar=Calendar::standard(),
+    extension=ExtensionPolicy::no_extension(),
+  )
+  let empty = Deadline::new(
+    start_date=Date::parse("2026-08-07").unwrap(),
+    rule=DateRule::sequence([]),
+    start_rule=StartDateRule::exclude(),
+    calendar=Calendar::standard(),
+    extension=ExtensionPolicy::no_extension(),
+  )
+  inspect(
+    weekly.calculate().unwrap().adjusted_date().to_string(),
+    content="2026-08-14",
+  )
+  inspect(
+    empty.calculate().unwrap().adjusted_date().to_string(),
+    content="2026-08-07",
+  )
+}
+
+///|
+test "deadline rejects negative counts and date overflow" {
+  match
+    Deadline::new(
+      start_date=Date::parse("2026-08-07").unwrap(),
+      rule=DateRule::calendar_days(-1),
+      start_rule=StartDateRule::exclude(),
+      calendar=Calendar::standard(),
+      extension=ExtensionPolicy::no_extension(),
+    ).calculate() {
+    Err(NegativeRuleCount) => inspect(true, content="true")
+    _ => inspect(false, content="true")
+  }
+  match
+    Deadline::new(
+      start_date=Date::parse("9999-12-31").unwrap(),
+      rule=DateRule::calendar_days(1),
+      start_rule=StartDateRule::exclude(),
+      calendar=Calendar::standard(),
+      extension=ExtensionPolicy::no_extension(),
+    ).calculate() {
+    Err(DateFailure(OutOfRange)) => inspect(true, content="true")
+    _ => inspect(false, content="true")
+  }
+}

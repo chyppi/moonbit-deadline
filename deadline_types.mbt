@@ -14,9 +14,25 @@ pub struct CalculationStep {
 } derive(Debug)
 
 ///|
+pub fn CalculationStep::kind(self : CalculationStep) -> StepKind {
+  self.kind
+}
+
+///|
+pub fn CalculationStep::date(self : CalculationStep) -> Date {
+  self.date
+}
+
+///|
+pub fn CalculationStep::note(self : CalculationStep) -> String {
+  self.note
+}
+
+///|
 pub enum DeadlineError {
   NegativeRuleCount
   CalendarFailure(CalendarError)
+  DateFailure(DateError)
 } derive(Debug)
 
 ///|
@@ -41,8 +57,13 @@ pub fn Deadline::new(
 
 ///|
 pub struct DeadlineResult {
+  start : Date
+  rule : DateRule
   original : Date
   adjusted : Date
+  adjustment_count : Int
+  crossed_month : Bool
+  crossed_year : Bool
   steps : Array[CalculationStep]
   explanation : String
 } derive(Debug)
@@ -50,6 +71,31 @@ pub struct DeadlineResult {
 ///|
 pub fn DeadlineResult::original_date(self : DeadlineResult) -> Date {
   self.original
+}
+
+///|
+pub fn DeadlineResult::start_date(self : DeadlineResult) -> Date {
+  self.start
+}
+
+///|
+pub fn DeadlineResult::rule(self : DeadlineResult) -> DateRule {
+  self.rule
+}
+
+///|
+pub fn DeadlineResult::adjustment_count(self : DeadlineResult) -> Int {
+  self.adjustment_count
+}
+
+///|
+pub fn DeadlineResult::crossed_month(self : DeadlineResult) -> Bool {
+  self.crossed_month
+}
+
+///|
+pub fn DeadlineResult::crossed_year(self : DeadlineResult) -> Bool {
+  self.crossed_year
 }
 
 ///|
