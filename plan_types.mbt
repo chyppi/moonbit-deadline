@@ -20,6 +20,7 @@ pub enum PlanError {
   StageIndexOutOfRange(Int)
   StageLabelNotFound(String)
   StageDeadlineFailure(Int, String, DeadlineError)
+  StageSuspensionFailure(Int, String, SuspensionError)
 } derive(Debug)
 
 ///|
@@ -30,6 +31,7 @@ pub struct PlanStage {
   calendar : Calendar
   extension : ExtensionPolicy
   start_source : StageStartSource
+  suspension : SuspensionSet?
 } derive(Debug)
 
 ///|
@@ -40,11 +42,20 @@ pub fn PlanStage::new(
   calendar~ : Calendar,
   extension~ : ExtensionPolicy,
   start_source? : StageStartSource = PreviousAdjusted,
+  suspension? : SuspensionSet,
 ) -> Result[PlanStage, PlanError] {
   if label == "" {
     Err(EmptyStageLabel)
   } else {
-    Ok({ label, rule, start_rule, calendar, extension, start_source })
+    Ok({
+      label,
+      rule,
+      start_rule,
+      calendar,
+      extension,
+      start_source,
+      suspension,
+    })
   }
 }
 
@@ -76,6 +87,11 @@ pub fn PlanStage::extension(self : PlanStage) -> ExtensionPolicy {
 ///|
 pub fn PlanStage::start_source(self : PlanStage) -> StageStartSource {
   self.start_source
+}
+
+///|
+pub fn PlanStage::suspension(self : PlanStage) -> SuspensionSet? {
+  self.suspension
 }
 
 ///|
@@ -125,16 +141,30 @@ pub fn DeadlinePlan::add_stage(
   calendar~ : Calendar,
   extension~ : ExtensionPolicy,
   start_source? : StageStartSource = PreviousAdjusted,
+  suspension? : SuspensionSet,
 ) -> Result[DeadlinePlan, PlanError] {
-  match
-    PlanStage::new(
-      label~,
-      rule~,
-      start_rule~,
-      calendar~,
-      extension~,
-      start_source~,
-    ) {
+  let stage_result = match suspension {
+    Some(suspension) =>
+      PlanStage::new(
+        label~,
+        rule~,
+        start_rule~,
+        calendar~,
+        extension~,
+        start_source~,
+        suspension~,
+      )
+    None =>
+      PlanStage::new(
+        label~,
+        rule~,
+        start_rule~,
+        calendar~,
+        extension~,
+        start_source~,
+      )
+  }
+  match stage_result {
     Ok(stage) => {
       let stages = self.stages.copy()
       stages.push(stage)
