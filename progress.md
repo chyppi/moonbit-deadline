@@ -22,3 +22,5 @@
 - Added MIT license, README, changelog, contribution guide and a three-OS CI workflow based on the MoonBit community template.
 - Current local result: 27 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.
 - Review fixes: checked date arithmetic now returns `OutOfRange`, calendar search no longer has a fixed 3660-day ceiling, deadline results expose audit metadata and step accessors, and month/year rules apply the start-date convention.
+- Final local history was rewritten once so every commit uses the active GitHub/GitLink account identity `chyppi`; both remotes now point at the same main commit `347709fd29f808bd176bef5a8e55306be7cff381`.
+- GitHub Actions three-OS CI passed after the generated-interface whitespace compatibility gate was corrected; GitLink shows main and 19 commits.

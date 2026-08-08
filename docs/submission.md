@@ -13,8 +13,16 @@ This file records the local evidence prepared for the August 2026 MoonBit hackat
 | Calendar provenance | `sample_calendar.mbt`, `docs/calendar-data.md` | ready |
 | Change traceability | `CHANGELOG.md`, focused commits, `progress.md` | ready |
 | Mooncakes discoverability | `moon.mod` keywords and package metadata | prepared; publication requires credentials |
-| Single contributor identity | Git history is authored by one configured user | verify after remote push |
-| Default branch and public remotes | GitHub/GitLink repository settings | pending remote creation |
+| Single contributor identity | GitHub commit API and GitLink project page show `chyppi` | verified |
+| Default branch and public remotes | GitHub `main`; GitLink `main` | verified |
+
+## Remote evidence
+
+- GitHub: https://github.com/chyppi/moonbit-deadline
+- GitLink: https://www.gitlink.org.cn/chyppi/moonbit-deadline
+- Final main commit: `347709fd29f808bd176bef5a8e55306be7cff381`
+- Main history: 19 meaningful commits, one author identity (`chyppi`)
+- GitHub Actions: three-platform `Check and Test` run passed after the final identity and CI updates.
 
 ## Scope differentiation
 

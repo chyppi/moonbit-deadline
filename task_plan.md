@@ -40,3 +40,4 @@
 - README, MIT license, changelog, contribution guide and cross-platform CI are present.
 - Local verification currently passes for all four targets with 27 tests; final remote synchronization, Mooncakes publication preparation and OSC2026 audit remain.
 - The installed toolchain accepts `check/test --deny-warn` but rejects `fmt/info --deny-warn`; the repository documents and gates the supported equivalent until the requested toolchain exposes those flags.
+- Remote delivery is complete: GitHub and GitLink both expose the same final main commit, use main as the default branch, and show the chyppi identity as the sole active contributor.
