@@ -20,8 +20,8 @@ This file records the local evidence prepared for the August 2026 MoonBit hackat
 
 - GitHub: https://github.com/chyppi/moonbit-deadline
 - GitLink: https://www.gitlink.org.cn/chyppi/moonbit-deadline
-- Final main commit: `347709fd29f808bd176bef5a8e55306be7cff381`
-- Main history: 19 meaningful commits, one author identity (`chyppi`)
+- Final main commit before this audit update: `9e5a0111d77f4d7e7361eedd3f2d2e8f4a119ed2`
+- Main history after this audit update: 21 meaningful commits, one author identity (`chyppi`)
 - GitHub Actions: three-platform `Check and Test` run passed after the final identity and CI updates.
 
 ## Scope differentiation
