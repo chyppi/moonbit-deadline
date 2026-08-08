@@ -44,3 +44,12 @@ test "date reports a stable weekday" {
     Err(_) => inspect(false, content="true")
   }
 }
+
+///|
+test "date checked arithmetic rejects year overflow" {
+  match Date::parse("9999-12-31").unwrap().try_add_days(1) {
+    Ok(_) => inspect(false, content="true")
+    Err(OutOfRange) => inspect(true, content="true")
+    Err(_) => inspect(false, content="true")
+  }
+}

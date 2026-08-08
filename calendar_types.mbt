@@ -43,7 +43,7 @@ pub fn WeekendPolicy::is_weekend(
 ///|
 pub enum CalendarError {
   NegativeBusinessDayCount
-  SearchLimitExceeded
+  DateOutOfRange
 } derive(Debug, Eq, Compare)
 
 ///|

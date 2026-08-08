@@ -32,25 +32,53 @@ fn civil_from_days(serial : Int) -> (Int, Int, Int) {
 }
 
 ///|
-pub fn Date::add_days(self : Date, count : Int) -> Date {
+pub fn Date::try_add_days(self : Date, count : Int) -> Result[Date, DateError] {
   let (year, month, day) = civil_from_days(
     days_from_civil(self.year, self.month, self.day) + count,
   )
-  { year, month, day }
+  if year < 1 || year > 9999 {
+    Err(OutOfRange)
+  } else {
+    Ok({ year, month, day })
+  }
+}
+
+///|
+pub fn Date::add_days(self : Date, count : Int) -> Date {
+  self.try_add_days(count).unwrap()
+}
+
+///|
+pub fn Date::try_add_months(
+  self : Date,
+  count : Int,
+) -> Result[Date, DateError] {
+  let zero_based = self.year * 12 + self.month - 1 + count
+  let year = zero_based / 12
+  let month = zero_based % 12 + 1
+  if year < 1 || year > 9999 {
+    return Err(OutOfRange)
+  }
+  let day = Int::min(self.day, days_in_month(year, month))
+  Ok({ year, month, day })
 }
 
 ///|
 pub fn Date::add_months(self : Date, count : Int) -> Date {
-  let zero_based = self.year * 12 + self.month - 1 + count
-  let year = zero_based / 12
-  let month = zero_based % 12 + 1
-  let day = Int::min(self.day, days_in_month(year, month))
-  { year, month, day }
+  self.try_add_months(count).unwrap()
+}
+
+///|
+pub fn Date::try_add_years(self : Date, count : Int) -> Result[Date, DateError] {
+  let year = self.year + count
+  if year < 1 || year > 9999 {
+    return Err(OutOfRange)
+  }
+  let day = Int::min(self.day, days_in_month(year, self.month))
+  Ok({ year, month: self.month, day })
 }
 
 ///|
 pub fn Date::add_years(self : Date, count : Int) -> Date {
-  let year = self.year + count
-  let day = Int::min(self.day, days_in_month(year, self.month))
-  { year, month: self.month, day }
+  self.try_add_years(count).unwrap()
 }

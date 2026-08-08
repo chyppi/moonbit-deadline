@@ -15,15 +15,20 @@ pub fn Calendar::next_business_day(
   date : Date,
 ) -> Result[Date, CalendarError] {
   let mut candidate = date
-  let mut attempts = 0
-  while attempts < 3660 {
+  let mut searching = true
+  let mut result = Err(DateOutOfRange)
+  while searching {
     if self.is_business_day(candidate) {
-      return Ok(candidate)
+      result = Ok(candidate)
+      searching = false
+    } else {
+      match candidate.try_add_days(1) {
+        Ok(next) => candidate = next
+        Err(_) => searching = false
+      }
     }
-    candidate = candidate.add_days(1)
-    attempts = attempts + 1
   }
-  Err(SearchLimitExceeded)
+  result
 }
 
 ///|
@@ -32,15 +37,20 @@ pub fn Calendar::previous_business_day(
   date : Date,
 ) -> Result[Date, CalendarError] {
   let mut candidate = date
-  let mut attempts = 0
-  while attempts < 3660 {
+  let mut searching = true
+  let mut result = Err(DateOutOfRange)
+  while searching {
     if self.is_business_day(candidate) {
-      return Ok(candidate)
+      result = Ok(candidate)
+      searching = false
+    } else {
+      match candidate.try_add_days(-1) {
+        Ok(previous) => candidate = previous
+        Err(_) => searching = false
+      }
     }
-    candidate = candidate.add_days(-1)
-    attempts = attempts + 1
   }
-  Err(SearchLimitExceeded)
+  result
 }
 
 ///|
@@ -58,17 +68,14 @@ pub fn Calendar::advance_business_days(
   if include_start && self.is_business_day(candidate) && remaining > 0 {
     remaining = remaining - 1
   }
-  let mut attempts = 0
-  while remaining > 0 && attempts < 3660 {
-    candidate = candidate.add_days(1)
+  while remaining > 0 {
+    candidate = match candidate.try_add_days(1) {
+      Ok(next) => next
+      Err(_) => return Err(DateOutOfRange)
+    }
     if self.is_business_day(candidate) {
       remaining = remaining - 1
     }
-    attempts = attempts + 1
   }
-  if remaining == 0 {
-    Ok(candidate)
-  } else {
-    Err(SearchLimitExceeded)
-  }
+  Ok(candidate)
 }

@@ -32,6 +32,7 @@ pub fn Weekday::to_string(self : Weekday) -> String {
 
 ///|
 pub enum DateError {
+  OutOfRange
   InvalidYear
   InvalidMonth
   InvalidDay
