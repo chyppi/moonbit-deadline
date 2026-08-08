@@ -50,9 +50,15 @@ pub enum CalendarError {
 pub struct Calendar {
   name : String
   version : String
+  region : String
+  source : CalendarSource
+  valid_from : Date
+  valid_to : Date
+  versioned : Bool
   weekend : WeekendPolicy
   holidays : Array[Date]
   extra_workdays : Array[Date]
+  observed_holidays : Array[Date]
 } derive(Debug)
 
 ///|
@@ -66,9 +72,15 @@ pub fn Calendar::new(
   {
     name,
     version,
+    region: "",
+    source: CalendarSource::new(name="", url=""),
+    valid_from: default_version_date(),
+    valid_to: default_version_date(),
+    versioned: false,
     weekend,
     holidays: normalize_dates(holidays),
     extra_workdays: normalize_dates(extra_workdays),
+    observed_holidays: [],
   }
 }
 
@@ -91,6 +103,31 @@ pub fn Calendar::name(self : Calendar) -> String {
 ///|
 pub fn Calendar::version(self : Calendar) -> String {
   self.version
+}
+
+///|
+pub fn Calendar::region(self : Calendar) -> String {
+  self.region
+}
+
+///|
+pub fn Calendar::source(self : Calendar) -> CalendarSource {
+  self.source
+}
+
+///|
+pub fn Calendar::valid_from(self : Calendar) -> Date {
+  self.valid_from
+}
+
+///|
+pub fn Calendar::valid_to(self : Calendar) -> Date {
+  self.valid_to
+}
+
+///|
+pub fn Calendar::observed_holidays(self : Calendar) -> Array[Date] {
+  self.observed_holidays.copy()
 }
 
 ///|

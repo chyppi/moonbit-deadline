@@ -2,10 +2,30 @@
 pub fn Calendar::is_business_day(self : Calendar, date : Date) -> Bool {
   if self.extra_workdays.contains(date) {
     true
-  } else if self.holidays.contains(date) {
+  } else if self.holidays.contains(date) || self.observed_holidays.contains(date) {
     false
   } else {
     !self.weekend.is_weekend(date.weekday())
+  }
+}
+
+///|
+pub fn Calendar::with_version(
+  self : Calendar,
+  version : CalendarVersion,
+) -> Calendar {
+  {
+    name: version.name,
+    version: version.version,
+    region: version.region,
+    source: version.source,
+    valid_from: version.valid_from,
+    valid_to: version.valid_to,
+    versioned: true,
+    weekend: self.weekend,
+    holidays: self.holidays,
+    extra_workdays: self.extra_workdays,
+    observed_holidays: self.observed_holidays,
   }
 }
 
