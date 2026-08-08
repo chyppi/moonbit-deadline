@@ -17,3 +17,7 @@
 - 记录网页访问后备方案和一次严格定位错误，已改用角色链接定位。
 - 用户确认“通用核心 + 标注为示例的中国日历适配包”设计。
 - 完成并自审设计文档 `docs/superpowers/specs/2026-08-08-moonbit-deadline-design.md` 与实施计划 `docs/superpowers/plans/2026-08-08-moonbit-deadline.md`；尚未提交，因为 `.git` 元数据当前只读。
+- CLI implemented and verified with parser tests, sequence rules, calendar selection and an explanation-mode smoke test.
+- Added an explicit China 2026 calendar fixture with holiday and extra-workday tests; README records the official source and the production-data boundary.
+- Added MIT license, README, changelog, contribution guide and a three-OS CI workflow based on the MoonBit community template.
+- Current local result: 20 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.

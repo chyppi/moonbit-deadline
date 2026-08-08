@@ -36,3 +36,7 @@
 | Feishu 章节点击出现 2 个同名元素严格匹配错误 | `getByText("七、移植项目要求")` | 改用 TOC 的 `getByRole("link", ...)` 定位 |
 | PowerShell 读取 Git superproject 空值时调用 `.Trim()` | `git rev-parse --show-superproject-working-tree 2>$null` | 记录为空并继续；当前仓库不是子模块 |
 | 创建 `codex/moonbit-deadline` 分支时 `.git/HEAD.lock` 权限不足 | `git switch -c codex/moonbit-deadline` | 工作树写入可用但 Git 元数据只读；待需要提交时申请受控 Git 权限 |
+- Core date, calendar, deadline engine, CLI and China 2026 fixture are implemented.
+- README, MIT license, changelog, contribution guide and cross-platform CI are present.
+- Local verification currently passes for all four targets with 20 tests; final remote creation, Mooncakes publication preparation and OSC2026 audit remain.
+- The installed toolchain accepts `check/test --deny-warn` but rejects `fmt/info --deny-warn`; the repository documents and gates the supported equivalent until the requested toolchain exposes those flags.

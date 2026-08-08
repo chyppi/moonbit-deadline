@@ -198,3 +198,9 @@
 - [ ] Record any limitation honestly, especially sample calendar coverage and exact toolchain version.
 - [ ] Request code review on the final commit range before claiming completion.
 - [ ] Run all fresh verification commands again after review fixes.
+
+## Implementation status update
+
+The implementation uses the repository root as the public MoonBit package rather than a `src/` directory. The current tree includes the root date/calendar/deadline modules, `sample_calendar.mbt`, `cmd/deadline`, `.github/workflows/ci.yml`, README, MIT license, changelog and contribution guide. The license is MIT, matching `moon.mod` and the repository file.
+
+The installed MoonBit toolchain is `moon 0.1.20260713` / `moonc 0.10.4`. `moon check/test --deny-warn` pass; this toolchain rejects `moon fmt/info --deny-warn`, so CI uses `moon fmt` and `moon info` followed by `git diff --exit-code`, matching the official community workflow's generated-file gate.
