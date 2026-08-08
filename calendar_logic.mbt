@@ -2,7 +2,8 @@
 pub fn Calendar::is_business_day(self : Calendar, date : Date) -> Bool {
   if self.extra_workdays.contains(date) {
     true
-  } else if self.holidays.contains(date) || self.observed_holidays.contains(date) {
+  } else if self.holidays.contains(date) ||
+    self.observed_holidays.contains(date) {
     false
   } else {
     !self.weekend.is_weekend(date.weekday())

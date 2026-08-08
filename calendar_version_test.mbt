@@ -8,7 +8,7 @@ test "calendar version metadata is preserved on the calendar" {
     name="china-national-2026",
     region="CN-11",
     version="2025-11-04",
-    source=source,
+    source~,
     valid_from=Date::parse("2026-01-01").unwrap(),
     valid_to=Date::parse("2026-12-31").unwrap(),
   )
@@ -32,7 +32,7 @@ test "observed holidays move a saturday holiday to monday" {
     name="demo",
     region="CN",
     version="2026.1",
-    source=source,
+    source~,
     valid_from=Date::parse("2026-08-01").unwrap(),
     valid_to=Date::parse("2026-08-31").unwrap(),
   ).unwrap()
@@ -41,7 +41,10 @@ test "observed holidays move a saturday holiday to monday" {
   match calendar.with_observed_holidays([holiday]) {
     Ok(calendar) => {
       inspect(calendar.observed_date(holiday).to_string(), content="2026-08-10")
-      inspect(calendar.is_business_day(Date::parse("2026-08-10").unwrap()), content="false")
+      inspect(
+        calendar.is_business_day(Date::parse("2026-08-10").unwrap()),
+        content="false",
+      )
     }
     Err(_) => inspect(false, content="true")
   }
@@ -57,7 +60,7 @@ test "extra workdays override observed holidays" {
     name="demo",
     region="CN",
     version="2026.1",
-    source=source,
+    source~,
     valid_from=Date::parse("2026-08-01").unwrap(),
     valid_to=Date::parse("2026-08-31").unwrap(),
   ).unwrap()
@@ -71,7 +74,10 @@ test "extra workdays override observed holidays" {
   ).with_version(version)
   match calendar.with_observed_holidays([holiday]) {
     Ok(calendar) =>
-      inspect(calendar.is_business_day(Date::parse("2026-08-10").unwrap()), content="true")
+      inspect(
+        calendar.is_business_day(Date::parse("2026-08-10").unwrap()),
+        content="true",
+      )
     Err(_) => inspect(false, content="true")
   }
 }
@@ -86,7 +92,7 @@ test "duplicate observed holidays are deduplicated" {
     name="demo",
     region="CN",
     version="2026.1",
-    source=source,
+    source~,
     valid_from=Date::parse("2026-08-01").unwrap(),
     valid_to=Date::parse("2026-08-31").unwrap(),
   ).unwrap()
@@ -108,7 +114,7 @@ test "observed holidays reject dates outside the version range" {
     name="demo",
     region="CN",
     version="2026.1",
-    source=source,
+    source~,
     valid_from=Date::parse("2026-08-01").unwrap(),
     valid_to=Date::parse("2026-08-31").unwrap(),
   ).unwrap()
@@ -126,14 +132,15 @@ test "calendar version rejects reversed metadata ranges" {
     name="Beijing government policy page",
     url="https://www.beijing.gov.cn/gate/big5/www.beijing.gov.cn/zhengce/zhengcefagui/202511/t20251104_4258873.html",
   )
-  match CalendarVersion::new(
-    name="demo",
-    region="CN",
-    version="2026.1",
-    source=source,
-    valid_from=Date::parse("2026-12-31").unwrap(),
-    valid_to=Date::parse("2026-01-01").unwrap(),
-  ) {
+  match
+    CalendarVersion::new(
+      name="demo",
+      region="CN",
+      version="2026.1",
+      source~,
+      valid_from=Date::parse("2026-12-31").unwrap(),
+      valid_to=Date::parse("2026-01-01").unwrap(),
+    ) {
     Ok(_) => inspect(false, content="true")
     Err(InvalidRange) => inspect(true, content="true")
     Err(_) => inspect(false, content="true")

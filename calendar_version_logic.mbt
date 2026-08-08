@@ -1,8 +1,5 @@
 ///|
-pub fn CalendarSource::new(
-  name~ : String,
-  url~ : String,
-) -> CalendarSource {
+pub fn CalendarSource::new(name~ : String, url~ : String) -> CalendarSource {
   { name, url }
 }
 

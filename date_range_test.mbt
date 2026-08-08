@@ -23,8 +23,14 @@ test "date range intersection returns the closed overlap" {
   ).unwrap()
   match left.intersection(right) {
     Ok(range) => {
-      inspect(range.contains(Date::parse("2026-05-04").unwrap()), content="true")
-      inspect(range.contains(Date::parse("2026-05-05").unwrap()), content="true")
+      inspect(
+        range.contains(Date::parse("2026-05-04").unwrap()),
+        content="true",
+      )
+      inspect(
+        range.contains(Date::parse("2026-05-05").unwrap()),
+        content="true",
+      )
       inspect(range.calendar_days(), content="2")
     }
     Err(_) => inspect(false, content="true")
@@ -50,8 +56,14 @@ test "date range union joins adjacent closed ranges" {
   ).unwrap()
   match left.union(right) {
     Ok(range) => {
-      inspect(range.contains(Date::parse("2026-05-01").unwrap()), content="true")
-      inspect(range.contains(Date::parse("2026-05-06").unwrap()), content="true")
+      inspect(
+        range.contains(Date::parse("2026-05-01").unwrap()),
+        content="true",
+      )
+      inspect(
+        range.contains(Date::parse("2026-05-06").unwrap()),
+        content="true",
+      )
       inspect(range.calendar_days(), content="6")
     }
     Err(_) => inspect(false, content="true")

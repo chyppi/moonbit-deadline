@@ -49,8 +49,8 @@ pub fn DateRange::union(
 ///|
 pub fn DateRange::calendar_days(self : DateRange) -> Int {
   days_from_civil(self.end.year, self.end.month, self.end.day) -
-    days_from_civil(self.start.year, self.start.month, self.start.day) +
-    1
+  days_from_civil(self.start.year, self.start.month, self.start.day) +
+  1
 }
 
 ///|
