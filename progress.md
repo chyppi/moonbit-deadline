@@ -16,11 +16,11 @@
 - 读取社区 `check.yml` 与用户给定参考链接实际重定向后的 `PaiGack/moonbit_sshclient` `test.yml`，确认 CI 命令组合。
 - 记录网页访问后备方案和一次严格定位错误，已改用角色链接定位。
 - 用户确认“通用核心 + 标注为示例的中国日历适配包”设计。
-- 完成并自审设计文档 `docs/superpowers/specs/2026-08-08-moonbit-deadline-design.md` 与实施计划 `docs/superpowers/plans/2026-08-08-moonbit-deadline.md`；尚未提交，因为 `.git` 元数据当前只读。
+- 完成并自审设计文档 `docs/superpowers/specs/2026-08-08-moonbit-deadline-design.md` 与实施计划 `docs/superpowers/plans/2026-08-08-moonbit-deadline.md`，已纳入提交历史。
 - CLI implemented and verified with parser tests, sequence rules, calendar selection and an explanation-mode smoke test.
 - Added an explicit China 2026 calendar fixture with holiday and extra-workday tests; README records the official source and the production-data boundary.
 - Added MIT license, README, changelog, contribution guide and a three-OS CI workflow based on the MoonBit community template.
 - Current local result: 27 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.
 - Review fixes: checked date arithmetic now returns `OutOfRange`, calendar search no longer has a fixed 3660-day ceiling, deadline results expose audit metadata and step accessors, and month/year rules apply the start-date convention.
-- Final local history was rewritten once so every commit uses the active GitHub/GitLink account identity `chyppi`; both remotes now point at the same main commit `347709fd29f808bd176bef5a8e55306be7cff381`.
-- GitHub Actions three-OS CI passed after the generated-interface whitespace compatibility gate was corrected; GitLink shows main and 19 commits.
+- Final local history was rewritten once so every commit uses the active GitHub/GitLink account identity `chyppi`; both remotes now point at `22bc350280c94f8cf381188d804ef629a7396175` on `main`.
+- GitHub Actions three-OS CI passed after the generated-interface whitespace compatibility gate was corrected; GitHub and GitLink each show `main` and 21 commits, with `chyppi` as the sole contributor.

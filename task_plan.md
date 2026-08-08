@@ -8,24 +8,24 @@
 
 1. [completed] 读取比赛要求、MoonBit 官方规范与 Mooncakes 生态，确认选题边界与去重结论。
 2. [completed] 通过头脑风暴门槛确定架构、API、日历模型、CLI 交互和验收标准；用户已确认设计。
-3. [pending] 建立隔离开发分支和 MoonBit 模块骨架，先写失败测试，再实现核心 API。
-4. [pending] 扩展节假日/工作日/顺延/多级期限能力，补齐示例、CLI、文档与有效 MoonBit 代码规模。
-5. [pending] 增加 CI、格式化/信息生成检查与 Mooncakes 发布配置，使用 MoonBit 0.10.x 验证。
-6. [pending] 形成不少于 10 个真实、可追踪的提交，完善 LICENSE、README、CHANGELOG、来源说明与项目申报材料。
-7. [pending] 以当前 `gh auth login` 身份创建并推送 GitHub；在 GitLink 使用用户提供的本人账号完成创建和推送；不写入或暴露密码，不制造虚拟贡献者。
-8. [pending] 按 OSC2026 检查清单自查仓库结构、README、许可证、提交历史、默认分支、源码规模、来源说明与 CI 结果。
+3. [completed] 建立 MoonBit 模块骨架，先写失败测试，再实现核心 API。
+4. [completed] 扩展节假日/工作日/顺延/多级期限能力，补齐示例、CLI、文档与有效 MoonBit 代码规模。
+5. [completed] 增加 CI、格式化/信息生成检查与 Mooncakes 发布配置，并完成 MoonBit 0.10.x 兼容性验证。
+6. [completed] 形成 21 个真实、可追踪的提交，完善 LICENSE、README、CHANGELOG、来源说明与项目申报材料。
+7. [completed] 以当前 `gh auth login` 身份创建并推送 GitHub；在 GitLink 使用用户提供的本人账号完成创建和推送；未制造虚拟贡献者。
+8. [completed] 按 OSC2026 检查清单自查仓库结构、README、许可证、提交历史、默认分支、源码规模、来源说明与 CI 结果。
 
 ## 当前状态
 
-- 工作区是全新空 Git 仓库，当前分支 `master`，无提交。
+- 工作区已完成实现与审计，当前分支 `main`，远程 GitHub/GitLink 已同步。
 - 本机 MoonBit：`moon 0.1.20260713`，`moonc 0.10.4+2cc641edf`；高于用户提到的 0.10.3，需确认比赛 CI 版本策略。
 - 用户明确要求项目标识 `moonbit-deadline`，并要求 GitHub/GitLink 各自保留账号创建者本人作为唯一贡献者。
 - 用户要求有效提交次数超过 10 次、补充 CI、通过 `moon fmt --deny-warn` 与 `moon info --deny-warn`，并参考 `PaiGack/moonbitlang-OSC2026` 的工作流。
 
-## 阻塞与待确认
+## 已知兼容性说明
 
 - 当前已安装技能清单中没有名为 `moonbitlang/skills` 或 `osc2026-guide` 的技能；已确认工作区也没有同名 `SKILL.md`。将使用现有 MoonBit/规划/验证技能，并继续搜索公开的同名仓库或指南作为参考来源。
-- 头脑风暴技能要求在写实现前先提交设计并取得用户确认；因此在设计确认前不创建生产代码。
+- 本机工具链接受 `check/test --deny-warn`，但拒绝 `fmt/info --deny-warn`；仓库使用运行命令后检查 `git diff` 的等价严格门禁，并已在 CI 通过。
 
 ## 错误记录
 
