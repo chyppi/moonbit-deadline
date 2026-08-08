@@ -22,9 +22,15 @@ pub fn CalculationStep::note(Self) -> String
 pub struct Calendar {
   name : String
   version : String
+  region : String
+  source : CalendarSource
+  valid_from : Date
+  valid_to : Date
+  versioned : Bool
   weekend : WeekendPolicy
   holidays : Array[Date]
   extra_workdays : Array[Date]
+  observed_holidays : Array[Date]
 } derive(@debug.Debug)
 pub fn Calendar::advance_business_days(Self, Date, Int, include_start? : Bool) -> Result[Date, CalendarError]
 pub fn Calendar::china_2026() -> Self
@@ -32,13 +38,51 @@ pub fn Calendar::is_business_day(Self, Date) -> Bool
 pub fn Calendar::name(Self) -> String
 pub fn Calendar::new(name~ : String, version~ : String, weekend~ : WeekendPolicy, holidays~ : Array[Date], extra_workdays~ : Array[Date]) -> Self
 pub fn Calendar::next_business_day(Self, Date) -> Result[Date, CalendarError]
+pub fn Calendar::observed_date(Self, Date) -> Date
+pub fn Calendar::observed_holidays(Self) -> Array[Date]
 pub fn Calendar::previous_business_day(Self, Date) -> Result[Date, CalendarError]
+pub fn Calendar::region(Self) -> String
+pub fn Calendar::source(Self) -> CalendarSource
 pub fn Calendar::standard() -> Self
+pub fn Calendar::valid_from(Self) -> Date
+pub fn Calendar::valid_to(Self) -> Date
 pub fn Calendar::version(Self) -> String
+pub fn Calendar::with_observed_holidays(Self, Array[Date]) -> Result[Self, CalendarVersionError]
+pub fn Calendar::with_version(Self, CalendarVersion) -> Self
 
 pub enum CalendarError {
   NegativeBusinessDayCount
   DateOutOfRange
+} derive(Compare, Eq, @debug.Debug)
+
+pub struct CalendarSource {
+  name : String
+  url : String
+} derive(Compare, Eq, @debug.Debug)
+pub fn CalendarSource::name(Self) -> String
+pub fn CalendarSource::new(name~ : String, url~ : String) -> Self
+pub fn CalendarSource::url(Self) -> String
+
+pub struct CalendarVersion {
+  name : String
+  region : String
+  version : String
+  source : CalendarSource
+  valid_from : Date
+  valid_to : Date
+} derive(Compare, Eq, @debug.Debug)
+pub fn CalendarVersion::name(Self) -> String
+pub fn CalendarVersion::new(name~ : String, region~ : String, version~ : String, source~ : CalendarSource, valid_from~ : Date, valid_to~ : Date) -> Result[Self, CalendarVersionError]
+pub fn CalendarVersion::region(Self) -> String
+pub fn CalendarVersion::source(Self) -> CalendarSource
+pub fn CalendarVersion::valid_from(Self) -> Date
+pub fn CalendarVersion::valid_to(Self) -> Date
+pub fn CalendarVersion::version(Self) -> String
+
+pub enum CalendarVersionError {
+  InvalidRange
+  MissingVersionMetadata
+  ObservationOutOfRange(Date)
 } derive(Compare, Eq, @debug.Debug)
 
 pub struct Date {
@@ -64,6 +108,25 @@ pub enum DateError {
   InvalidDay
   InvalidFormat
   InvalidNumber
+} derive(Compare, Eq, @debug.Debug)
+
+pub struct DateRange {
+  start : Date
+  end : Date
+} derive(Compare, Eq, @debug.Debug)
+pub fn DateRange::business_days(Self, Calendar) -> Int
+pub fn DateRange::calendar_days(Self) -> Int
+pub fn DateRange::closed(start~ : Date, end~ : Date) -> Result[Self, DateRangeError]
+pub fn DateRange::contains(Self, Date) -> Bool
+pub fn DateRange::intersection(Self, Self) -> Result[Self, DateRangeError]
+pub fn DateRange::overlaps(Self, Self) -> Bool
+pub fn DateRange::single(Date) -> Self
+pub fn DateRange::union(Self, Self) -> Result[Self, DateRangeError]
+
+pub enum DateRangeError {
+  Reversed
+  OutOfRange
+  NoIntersection
 } derive(Compare, Eq, @debug.Debug)
 
 pub enum DateRule {
@@ -97,6 +160,18 @@ pub enum DeadlineError {
   DateFailure(DateError)
 } derive(@debug.Debug)
 
+pub struct DeadlinePlan {
+  start_date : Date
+  stages : Array[PlanStage]
+} derive(@debug.Debug)
+pub fn DeadlinePlan::add_stage(Self, label~ : String, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy, start_source? : StageStartSource, suspension? : SuspensionSet) -> Result[Self, PlanError]
+pub fn DeadlinePlan::calculate(Self) -> Result[PlanResult, PlanError]
+pub fn DeadlinePlan::new(start_date~ : Date) -> Self
+pub fn DeadlinePlan::stage(Self, Int) -> Result[PlanStage, PlanError]
+pub fn DeadlinePlan::stage_count(Self) -> Int
+pub fn DeadlinePlan::stages(Self) -> Array[PlanStage]
+pub fn DeadlinePlan::start_date(Self) -> Date
+
 pub struct DeadlineResult {
   start : Date
   rule : DateRule
@@ -129,6 +204,65 @@ pub fn ExtensionPolicy::modified_following() -> Self
 pub fn ExtensionPolicy::no_extension() -> Self
 pub fn ExtensionPolicy::preceding() -> Self
 
+pub enum PlanError {
+  EmptyStageLabel
+  StageIndexOutOfRange(Int)
+  StageLabelNotFound(String)
+  StageDeadlineFailure(Int, String, DeadlineError)
+  StageSuspensionFailure(Int, String, SuspensionError)
+} derive(@debug.Debug)
+
+pub struct PlanResult {
+  start_date : Date
+  stages : Array[PlanStageResult]
+  final_original : Date
+  final_adjusted : Date
+} derive(@debug.Debug)
+pub fn PlanResult::final_adjusted_date(Self) -> Date
+pub fn PlanResult::final_original_date(Self) -> Date
+pub fn PlanResult::stage(Self, Int) -> Result[PlanStageResult, PlanError]
+pub fn PlanResult::stage_count(Self) -> Int
+pub fn PlanResult::stage_named(Self, String) -> Result[PlanStageResult, PlanError]
+pub fn PlanResult::stages(Self) -> Array[PlanStageResult]
+pub fn PlanResult::start_date(Self) -> Date
+
+pub struct PlanStage {
+  label : String
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+  start_source : StageStartSource
+  suspension : SuspensionSet?
+} derive(@debug.Debug)
+pub fn PlanStage::calendar(Self) -> Calendar
+pub fn PlanStage::extension(Self) -> ExtensionPolicy
+pub fn PlanStage::label(Self) -> String
+pub fn PlanStage::new(label~ : String, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy, start_source? : StageStartSource, suspension? : SuspensionSet) -> Result[Self, PlanError]
+pub fn PlanStage::rule(Self) -> DateRule
+pub fn PlanStage::start_rule(Self) -> StartDateRule
+pub fn PlanStage::start_source(Self) -> StageStartSource
+pub fn PlanStage::suspension(Self) -> SuspensionSet?
+
+pub struct PlanStageResult {
+  index : Int
+  label : String
+  result : DeadlineResult
+} derive(@debug.Debug)
+pub fn PlanStageResult::adjusted_date(Self) -> Date
+pub fn PlanStageResult::deadline_result(Self) -> DeadlineResult
+pub fn PlanStageResult::index(Self) -> Int
+pub fn PlanStageResult::label(Self) -> String
+pub fn PlanStageResult::original_date(Self) -> Date
+pub fn PlanStageResult::start_date(Self) -> Date
+
+pub enum StageStartSource {
+  PreviousAdjusted
+  PreviousOriginal
+} derive(Compare, Eq, @debug.Debug)
+pub fn StageStartSource::previous_adjusted() -> Self
+pub fn StageStartSource::previous_original() -> Self
+
 pub enum StartDateRule {
   Include
   Exclude
@@ -142,6 +276,40 @@ pub enum StepKind {
   Extension
   Complete
 } derive(Compare, Eq, @debug.Debug)
+
+pub enum SuspensionError {
+  Reversed
+  OutOfRange
+  Aborted
+} derive(Compare, Eq, @debug.Debug)
+
+pub struct SuspensionPeriod {
+  start : Date
+  end : Date
+} derive(Compare, Eq, @debug.Debug)
+pub fn SuspensionPeriod::end(Self) -> Date
+pub fn SuspensionPeriod::new(start~ : Date, end~ : Date) -> Result[Self, SuspensionError]
+pub fn SuspensionPeriod::start(Self) -> Date
+
+pub enum SuspensionPolicy {
+  PauseInclusive
+  PauseExclusive
+} derive(Compare, Eq, @debug.Debug)
+pub fn SuspensionPolicy::pause_exclusive() -> Self
+pub fn SuspensionPolicy::pause_inclusive() -> Self
+
+pub struct SuspensionSet {
+  periods : Array[SuspensionPeriod]
+  policy : SuspensionPolicy
+  abort_on : Date?
+} derive(@debug.Debug)
+pub fn SuspensionSet::abort_on(Self) -> Date?
+pub fn SuspensionSet::business_days(Self, Calendar) -> Int
+pub fn SuspensionSet::calendar_days(Self) -> Int
+pub fn SuspensionSet::new(periods~ : Array[SuspensionPeriod], policy? : SuspensionPolicy, abort_on? : Date) -> Self
+pub fn SuspensionSet::normalize(Self) -> Self
+pub fn SuspensionSet::periods(Self) -> Array[SuspensionPeriod]
+pub fn SuspensionSet::policy(Self) -> SuspensionPolicy
 
 pub enum Weekday {
   Monday
