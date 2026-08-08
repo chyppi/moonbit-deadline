@@ -11,7 +11,7 @@
 3. [completed] 建立 MoonBit 模块骨架，先写失败测试，再实现核心 API。
 4. [completed] 扩展节假日/工作日/顺延/多级期限能力，补齐示例、CLI、文档与有效 MoonBit 代码规模。
 5. [completed] 增加 CI、格式化/信息生成检查与 Mooncakes 发布配置，并完成 MoonBit 0.10.x 兼容性验证。
-6. [completed] 形成 21 个真实、可追踪的提交，完善 LICENSE、README、CHANGELOG、来源说明与项目申报材料。
+6. [completed] 形成超过 10 个真实、可追踪的提交，完善 LICENSE、README、CHANGELOG、来源说明与项目申报材料。
 7. [completed] 以当前 `gh auth login` 身份创建并推送 GitHub；在 GitLink 使用用户提供的本人账号完成创建和推送；未制造虚拟贡献者。
 8. [completed] 按 OSC2026 检查清单自查仓库结构、README、许可证、提交历史、默认分支、源码规模、来源说明与 CI 结果。
 

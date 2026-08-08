@@ -23,4 +23,4 @@
 - Current local result: 27 tests pass for wasm, wasm-gc, js and native; `moon check --target all --deny-warn`, `moon fmt`, `moon info` and `git diff --exit-code` pass.
 - Review fixes: checked date arithmetic now returns `OutOfRange`, calendar search no longer has a fixed 3660-day ceiling, deadline results expose audit metadata and step accessors, and month/year rules apply the start-date convention.
 - Final local history was rewritten once so every commit uses the active GitHub/GitLink account identity `chyppi`; both remotes now point at `22bc350280c94f8cf381188d804ef629a7396175` on `main`.
-- GitHub Actions three-OS CI passed after the generated-interface whitespace compatibility gate was corrected; GitHub and GitLink each show `main` and 21 commits, with `chyppi` as the sole contributor.
+- GitHub Actions three-OS CI passed after the generated-interface whitespace compatibility gate was corrected; GitHub and GitLink show `main`, more than 10 commits, and `chyppi` as the sole contributor.
