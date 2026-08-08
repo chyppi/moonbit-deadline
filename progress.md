@@ -2,6 +2,7 @@
 
 - TDD RED verified: `moon test --deny-warn` fails because the intended `Date` type and API are not yet defined; the failure is the expected missing-feature diagnostic.
 - TDD RED verified for Calendar: the suite fails only because `Calendar` and `WeekendPolicy` are not yet defined.
+- TDD RED verified for deadline engine: the suite fails only because the rule, policy, deadline, and result APIs are not yet defined.
 
 ## 2026-08-08
 
