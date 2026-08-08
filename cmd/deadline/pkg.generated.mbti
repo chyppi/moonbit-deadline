@@ -1,0 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "chyppi/moonbit-deadline/cmd/deadline"
+
+import {
+  "chyppi/moonbit-deadline",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn execute(Array[String]) -> Result[String, CliError]
+
+pub fn parse_cli_arguments(Array[String]) -> Result[CliConfig, CliError]
+
+pub fn parse_rule_spec(String) -> Result[@moonbit-deadline.DateRule, CliError]
+
+// Errors
+
+// Types and methods
+pub struct CliConfig {
+  start : @moonbit-deadline.Date
+  rule : @moonbit-deadline.DateRule
+  exclude_start : Bool
+  calendar : String
+  extension : @moonbit-deadline.ExtensionPolicy
+  explain : Bool
+}
+
+pub enum CliError {
+  MissingOption(String)
+  InvalidOption(String)
+  InvalidRule(String)
+  InvalidNumber(String)
+  InvalidDate(@moonbit-deadline.DateError)
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

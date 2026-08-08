@@ -1,0 +1,60 @@
+name: Check and Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install MoonBit on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Install MoonBit on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+          irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Show toolchain
+        run: |
+          moon version --all
+          moon update
+
+      - name: Check all targets
+        run: moon check --target all --deny-warn
+
+      - name: Test all targets
+        run: moon test --target all --deny-warn
+
+      - name: CLI smoke test
+        run: moon run cmd/deadline -- --start 2026-08-07 --rule business-days:5 --exclude-start --extension following --explain
+
+      - name: Format and metadata are clean
+        shell: bash
+        run: |
+          moon fmt
+          git diff --exit-code
+          moon info
+          git diff --exit-code
