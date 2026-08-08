@@ -1,8 +1,14 @@
 ///|
 test "calendar excludes Saturday and Sunday" {
   let calendar = Calendar::standard()
-  inspect(calendar.is_business_day(Date::parse("2026-08-08").unwrap()), content="false")
-  inspect(calendar.is_business_day(Date::parse("2026-08-10").unwrap()), content="true")
+  inspect(
+    calendar.is_business_day(Date::parse("2026-08-08").unwrap()),
+    content="false",
+  )
+  inspect(
+    calendar.is_business_day(Date::parse("2026-08-10").unwrap()),
+    content="true",
+  )
 }
 
 ///|

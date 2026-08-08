@@ -10,6 +10,27 @@ import {
 // Errors
 
 // Types and methods
+pub struct Calendar {
+  name : String
+  version : String
+  weekend : WeekendPolicy
+  holidays : Array[Date]
+  extra_workdays : Array[Date]
+} derive(@debug.Debug)
+pub fn Calendar::advance_business_days(Self, Date, Int, include_start? : Bool) -> Result[Date, CalendarError]
+pub fn Calendar::is_business_day(Self, Date) -> Bool
+pub fn Calendar::name(Self) -> String
+pub fn Calendar::new(name~ : String, version~ : String, weekend~ : WeekendPolicy, holidays~ : Array[Date], extra_workdays~ : Array[Date]) -> Self
+pub fn Calendar::next_business_day(Self, Date) -> Result[Date, CalendarError]
+pub fn Calendar::previous_business_day(Self, Date) -> Result[Date, CalendarError]
+pub fn Calendar::standard() -> Self
+pub fn Calendar::version(Self) -> String
+
+pub enum CalendarError {
+  NegativeBusinessDayCount
+  SearchLimitExceeded
+} derive(Compare, Eq, @debug.Debug)
+
 pub struct Date {
   year : Int
   month : Int
@@ -41,6 +62,16 @@ pub enum Weekday {
   Sunday
 } derive(Compare, Eq, @debug.Debug)
 pub fn Weekday::is_monday(Self) -> Bool
+
+pub enum WeekendPolicy {
+  SaturdaySunday
+  FridaySaturday
+  NoWeekend
+} derive(Compare, Eq, @debug.Debug)
+pub fn WeekendPolicy::friday_saturday() -> Self
+pub fn WeekendPolicy::is_weekend(Self, Weekday) -> Bool
+pub fn WeekendPolicy::no_weekend() -> Self
+pub fn WeekendPolicy::saturday_sunday() -> Self
 
 // Type aliases
 
