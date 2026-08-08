@@ -8,7 +8,8 @@ test "deadline excludes the start date for calendar days" {
     extension=ExtensionPolicy::no_extension(),
   )
   match deadline.calculate() {
-    Ok(result) => inspect(result.adjusted_date().to_string(), content="2026-08-11")
+    Ok(result) =>
+      inspect(result.adjusted_date().to_string(), content="2026-08-11")
     Err(_) => inspect(false, content="true")
   }
 }
@@ -23,7 +24,8 @@ test "deadline counts five business days after a Friday" {
     extension=ExtensionPolicy::no_extension(),
   )
   match deadline.calculate() {
-    Ok(result) => inspect(result.adjusted_date().to_string(), content="2026-08-14")
+    Ok(result) =>
+      inspect(result.adjusted_date().to_string(), content="2026-08-14")
     Err(_) => inspect(false, content="true")
   }
 }
@@ -42,7 +44,7 @@ test "deadline follows a holiday after natural day counting" {
     start_date=Date::parse("2026-08-07").unwrap(),
     rule=DateRule::calendar_days(3),
     start_rule=StartDateRule::exclude(),
-    calendar,
+    calendar~,
     extension=ExtensionPolicy::following(),
   )
   match deadline.calculate() {
@@ -64,7 +66,8 @@ test "modified following stays in the original month" {
     extension=ExtensionPolicy::modified_following(),
   )
   match deadline.calculate() {
-    Ok(result) => inspect(result.adjusted_date().to_string(), content="2026-01-30")
+    Ok(result) =>
+      inspect(result.adjusted_date().to_string(), content="2026-01-30")
     Err(_) => inspect(false, content="true")
   }
 }
@@ -82,7 +85,8 @@ test "sequence applies the first start rule once" {
     extension=ExtensionPolicy::no_extension(),
   )
   match deadline.calculate() {
-    Ok(result) => inspect(result.adjusted_date().to_string(), content="2026-08-04")
+    Ok(result) =>
+      inspect(result.adjusted_date().to_string(), content="2026-08-04")
     Err(_) => inspect(false, content="true")
   }
 }

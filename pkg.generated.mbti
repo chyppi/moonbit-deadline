@@ -10,6 +10,12 @@ import {
 // Errors
 
 // Types and methods
+pub struct CalculationStep {
+  kind : StepKind
+  date : Date
+  note : String
+} derive(@debug.Debug)
+
 pub struct Calendar {
   name : String
   version : String
@@ -50,6 +56,72 @@ pub enum DateError {
   InvalidDay
   InvalidFormat
   InvalidNumber
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum DateRule {
+  CalendarDays(Int)
+  BusinessDays(Int)
+  Weeks(Int)
+  Months(Int)
+  Years(Int)
+  Sequence(Array[DateRule])
+} derive(@debug.Debug)
+pub fn DateRule::business_days(Int) -> Self
+pub fn DateRule::calendar_days(Int) -> Self
+pub fn DateRule::months(Int) -> Self
+pub fn DateRule::sequence(Array[Self]) -> Self
+pub fn DateRule::weeks(Int) -> Self
+pub fn DateRule::years(Int) -> Self
+
+pub struct Deadline {
+  start_date : Date
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+} derive(@debug.Debug)
+pub fn Deadline::calculate(Self) -> Result[DeadlineResult, DeadlineError]
+pub fn Deadline::new(start_date~ : Date, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+
+pub enum DeadlineError {
+  NegativeRuleCount
+  CalendarFailure(CalendarError)
+} derive(@debug.Debug)
+
+pub struct DeadlineResult {
+  original : Date
+  adjusted : Date
+  steps : Array[CalculationStep]
+  explanation : String
+} derive(@debug.Debug)
+pub fn DeadlineResult::adjusted_date(Self) -> Date
+pub fn DeadlineResult::explain(Self) -> String
+pub fn DeadlineResult::original_date(Self) -> Date
+pub fn DeadlineResult::steps(Self) -> Array[CalculationStep]
+
+pub enum ExtensionPolicy {
+  NoExtension
+  Following
+  ModifiedFollowing
+  Preceding
+} derive(Compare, Eq, @debug.Debug)
+pub fn ExtensionPolicy::following() -> Self
+pub fn ExtensionPolicy::modified_following() -> Self
+pub fn ExtensionPolicy::no_extension() -> Self
+pub fn ExtensionPolicy::preceding() -> Self
+
+pub enum StartDateRule {
+  Include
+  Exclude
+} derive(Compare, Eq, @debug.Debug)
+pub fn StartDateRule::exclude() -> Self
+pub fn StartDateRule::including_start() -> Self
+
+pub enum StepKind {
+  Start
+  Count
+  Extension
+  Complete
 } derive(Compare, Eq, @debug.Debug)
 
 pub enum Weekday {
