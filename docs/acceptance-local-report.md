@@ -62,7 +62,7 @@ verbose 命令确认编译器为 `C:\mingw64\bin\cc.exe`。因此没有把 nativ
 ### README、许可证和结构
 
 - README 已按定位、特性、快速开始、库 API、数据来源、benchmark、开发验证、贡献和许可证组织。
-- README 内部表述扫描未命中“申报人”“结项”“唯一贡献者”“未修改申报书”“远程同步”等词。
+- README 内部表述扫描未命中竞赛流程、个人身份或本地审计对话等内部表述。
 - 根目录 `LICENSE` 为 MIT。
 - `_build/`、`.moon/`、`trace.json`、`.firecrawl/` 和 `.superpowers/` 已加入忽略范围或不纳入项目交付文件。
 - 中国 2026 fixture 继续保留来源 URL、版本和示例边界说明。
@@ -101,3 +101,4 @@ batch: 73983800
 - 已满足：有效 MoonBit 源码规模、可移植目标 check/test/build、边界测试、CLI、benchmark、README、MIT 许可证、来源说明、CI 配置和默认分支只读审计。
 - 已知环境问题：当前 Windows MinGW native runtime 的 `rand_s` 声明兼容性。
 - GitHub 推送和 Mooncakes 发布均已完成；本报告记录的是最终本地与远程验收证据。
+- 严格自查后移除了公开仓库中的过期过程文件 `findings.md`、`progress.md` 和 `task_plan.md`；正式工程信息保留在 README、CHANGELOG、设计说明和本报告中。
