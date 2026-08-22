@@ -17,4 +17,4 @@ moon check --target all --deny-warn
 moon test --target wasm-gc --deny-warn
 ```
 
-Windows native 测试的完整结果在 `progress.md` 中记录；在工具链运行库错误归因完成前，不在这里声称全目标测试通过。
+当前本地 native 复核也已通过；完整命令结果记录在 `docs/acceptance-local-report.md`。耗时数据只代表本机运行，不作为跨平台性能承诺。

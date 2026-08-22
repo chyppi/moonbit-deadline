@@ -11,8 +11,8 @@
 验收结果：
 
 - Mooncakes `chyppi/moonbit-deadline@0.1.0` 已通过校验并发布；申报书和内部计划文件未进入发布归档。
-- 验收提交 `5a236e26b554f51d5bb88407b0f08de702ecdf64` 已推送到 GitHub `main`。
-- GitHub Actions run `32562757657` 的 Ubuntu、macOS 和 Windows jobs 均通过。
+- 验收提交已推送到 GitHub `main`；本报告提交后以远程最新提交和 Actions 结果为准。
+- GitHub Actions 对 Ubuntu、macOS 和 Windows 均配置了检查；最新运行结果在项目的 Actions 页面核验。
 - 本次清理 `_build` 后，Windows MinGW native 测试和构建均已通过；此前记录的 `rand_s` 错误在当前工具链状态下已不再复现。
 
 ## 已检查证据
@@ -30,7 +30,7 @@ moonrun 0.1.20260814 (a2de5b2 2026-08-14)
 `pwsh -File scripts/audit.ps1`：
 
 ```text
-files=128 lines=9983 tests=273
+files=110 lines=9999 tests=272
 ```
 
 统计排除了 `pkg.generated.mbti`、`_build`、`.moon`、`target` 和 `node_modules`；行数来自实际 `.mbt` 文件读取，不是 README 声明。
@@ -40,10 +40,10 @@ files=128 lines=9983 tests=273
 | 命令 | 结果 |
 | --- | --- |
 | `moon check --target all --deny-warn` | 通过 |
-| `moon test --target wasm --deny-warn` | 273/273 通过 |
-| `moon test --target wasm-gc --deny-warn` | 273/273 通过 |
-| `moon test --target js --deny-warn` | 273/273 通过 |
-| `moon test --target native --deny-warn` | 273/273 通过 |
+| `moon test --target wasm --deny-warn` | 272/272 通过 |
+| `moon test --target wasm-gc --deny-warn` | 272/272 通过 |
+| `moon test --target js --deny-warn` | 272/272 通过 |
+| `moon test --target native --deny-warn` | 272/272 通过 |
 | `moon test --target all --deny-warn` | 四目标全部通过 |
 | `moon build --target wasm --deny-warn` | 通过 |
 | `moon build --target wasm-gc --deny-warn` | 通过 |
@@ -98,4 +98,4 @@ batch: 73983800
 - 已满足：有效 MoonBit 源码规模、四目标 check/test/build、边界测试、CLI、benchmark、README、MIT 许可证、来源说明、CI 配置和默认分支只读审计。
 - native 环境复核：此前 Windows MinGW 的 `rand_s` 错误本次已不再复现，当前本地四目标验证全部通过。
 - GitHub 推送和 Mooncakes 发布均已完成；本报告记录的是最终本地与远程验收证据。
-- 严格自查后移除了公开仓库中的过期过程文件 `findings.md`、`progress.md` 和 `task_plan.md`；正式工程信息保留在 README、CHANGELOG、设计说明和本报告中。
+- 工程信息保留在 README、CHANGELOG、设计说明、基线记录和本报告中；构建产物与本地缓存不进入交付树。

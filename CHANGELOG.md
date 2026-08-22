@@ -14,5 +14,5 @@
   windows, status records, reminders, constraints and forecast comparisons.
 - Add audit text/table/CSV output, date ordinals, rule parsing and a real
   benchmark workload with deterministic checksums.
-- Expand the regression suite to 273 tests covering date, calendar, workflow
+- Expand the regression suite to 272 tests covering date, calendar, workflow
   and boundary behavior.
