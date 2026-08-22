@@ -2,16 +2,16 @@
 
 生成日期：2026-08-22
 
-本报告按八月黑客松口径整理，参考公开的 [`osc2026-guide`](https://github.com/Milky2018/osc2026-guide) 检查项和 [MoonBit 社区 workflow templates](https://github.com/moonbit-community/.github/tree/main/workflow-templates)。本轮已将验收提交推送到 GitHub `chyppi/moonbit-deadline` 的 `main`，并验证三平台 CI 通过；Mooncakes 发布单独记录在发布流程中。
+本报告按八月黑客松口径整理，参考公开的 [`osc2026-guide`](https://github.com/Milky2018/osc2026-guide) 检查项和 [MoonBit 社区 workflow templates](https://github.com/moonbit-community/.github/tree/main/workflow-templates)。本轮已将验收提交推送到 GitHub `chyppi/moonbit-deadline` 的 `main`，验证三平台 CI 通过，并完成 Mooncakes `chyppi/moonbit-deadline@0.1.0` 发布。
 
 ## 总体判断
 
 本地仓库已经具备可运行的 MoonBit 库、CLI、边界测试、benchmark、许可证和 CI 配置。有效 `.mbt` 源码规模已超过 8,000 行，核心可移植目标检查/测试/构建通过。
 
-仍需在具备合适外部环境后完成的事项：
+验收结果：
 
-- Mooncakes 实际发布尚未执行，本轮按任务要求保留为后续动作。
-- 验收提交 `da6a8b9bf6ef1dab5e706404521faba9a41b24d4` 已推送到 GitHub `main`；申报书和内部计划文件未加入该提交。
+- Mooncakes `chyppi/moonbit-deadline@0.1.0` 已通过校验并发布；申报书和内部计划文件未进入发布归档。
+- 验收提交 `6aeee4b02ad40d2909bf8fdfd17f3f67a9fbef86` 已推送到 GitHub `main`。
 - GitHub Actions run `32561516037` 的 Ubuntu、macOS 和 Windows jobs 均通过。
 - 当前 Windows 使用 MinGW `cc.exe` 时，MoonBit runtime native 目标因 `rand_s` 声明不兼容失败；这不是仓库 MoonBit 源码诊断错误，CI 已对 Windows 采用 wasm/wasm-gc/js 便携目标，Unix 保留全目标验证。
 
@@ -82,7 +82,7 @@ B05B4B6CBA14C27C115A289362781F5684E0FB2EEC8EB4BFBD930DA2EE801E4D
 - 本地 `git rev-list --count HEAD`：31 个已有提交。
 - 最近历史中的提交作者为 `chyppi`，主题覆盖日期算术、日历版本、期限计划、暂停区间和接口刷新。
 - `git remote show origin`：远程 HEAD 为 `main`，本地 `main` 跟踪远程 `main`。
-- 本轮已执行 `git push origin main`，远程 `main` 当前指向验收提交 `da6a8b9bf6ef1dab5e706404521faba9a41b24d4`。
+- 本轮已执行 `git push origin main`，远程 `main` 当前指向验收提交 `6aeee4b02ad40d2909bf8fdfd17f3f67a9fbef86`。
 
 ### Benchmark
 
@@ -100,4 +100,4 @@ batch: 73983800
 
 - 已满足：有效 MoonBit 源码规模、可移植目标 check/test/build、边界测试、CLI、benchmark、README、MIT 许可证、来源说明、CI 配置和默认分支只读审计。
 - 已知环境问题：当前 Windows MinGW native runtime 的 `rand_s` 声明兼容性。
-- 待外部动作：提交本地改动、推送 GitHub、执行 Mooncakes 发布；这些动作本轮按要求没有执行。
+- GitHub 推送和 Mooncakes 发布均已完成；本报告记录的是最终本地与远程验收证据。
