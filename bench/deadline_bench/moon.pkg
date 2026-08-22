@@ -1,0 +1,6 @@
+import {
+  "chyppi/moonbit-deadline" @deadline,
+  "moonbitlang/core/env",
+}
+
+pkgtype(kind: "executable")

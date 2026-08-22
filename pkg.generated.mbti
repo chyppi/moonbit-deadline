@@ -10,6 +10,69 @@ import {
 // Errors
 
 // Types and methods
+pub struct AuditReport {
+  result : DeadlineResult
+  calendar : Calendar
+}
+pub fn AuditReport::from_result(DeadlineResult, Calendar) -> Self
+pub fn AuditReport::to_csv(Self) -> String
+pub fn AuditReport::to_table(Self) -> String
+pub fn AuditReport::to_text(Self) -> String
+
+pub struct BatchDeadline {
+  tasks : Array[BatchTask]
+}
+pub fn BatchDeadline::add(Self, BatchTask) -> Result[Self, BatchError]
+pub fn BatchDeadline::calculate(Self, EventContext) -> Result[BatchResult, BatchError]
+pub fn BatchDeadline::new() -> Self
+
+pub enum BatchError {
+  BatchDuplicate(String)
+  BatchMissingDependency(String)
+  BatchCycle(String)
+  BatchEmpty
+  BatchEventFailure(EventError)
+  BatchDeadlineFailure(DeadlineError)
+} derive(@debug.Debug)
+
+pub struct BatchResult {
+  entries : Array[BatchResultEntry]
+}
+pub fn BatchResult::explain(Self) -> String
+pub fn BatchResult::get(Self, String) -> DeadlineResult?
+pub fn BatchResult::ordered(Self) -> Array[String]
+
+type BatchResultEntry
+
+pub struct BatchTask {
+  name : String
+  event : String?
+  dependency : String?
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+}
+pub fn BatchTask::after(name~ : String, dependency~ : String, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+pub fn BatchTask::from_event(name~ : String, event~ : String, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+
+pub struct BusinessDayCursor {
+  date : Date
+  calendar : Calendar
+}
+pub fn BusinessDayCursor::forward(Self, Int) -> Result[Array[Date], CursorError]
+pub fn BusinessDayCursor::new(date~ : Date, calendar~ : Calendar) -> Self
+pub fn BusinessDayCursor::next(Self) -> Result[Date, CursorError]
+pub fn BusinessDayCursor::previous(Self) -> Result[Date, CursorError]
+
+pub struct BusinessDaySeries {
+  calendar : Calendar
+  start : Date
+  end : Date
+}
+pub fn BusinessDaySeries::collect(Self) -> Array[Date]
+pub fn BusinessDaySeries::new(calendar~ : Calendar, start~ : Date, end~ : Date) -> Result[Self, SeriesError]
+
 pub struct CalculationStep {
   kind : StepKind
   date : Date
@@ -34,21 +97,107 @@ pub struct Calendar {
 } derive(@debug.Debug)
 pub fn Calendar::advance_business_days(Self, Date, Int, include_start? : Bool) -> Result[Date, CalendarError]
 pub fn Calendar::china_2026() -> Self
+pub fn Calendar::dates_between(Self, start~ : Date, end~ : Date, filter~ : CalendarDateFilter) -> Result[Array[Date], CalendarValidationError]
+pub fn Calendar::diff(Self, Self) -> CalendarDiff
 pub fn Calendar::is_business_day(Self, Date) -> Bool
+pub fn Calendar::merge(Self, Self) -> Result[Self, CalendarValidationError]
 pub fn Calendar::name(Self) -> String
 pub fn Calendar::new(name~ : String, version~ : String, weekend~ : WeekendPolicy, holidays~ : Array[Date], extra_workdays~ : Array[Date]) -> Self
 pub fn Calendar::next_business_day(Self, Date) -> Result[Date, CalendarError]
 pub fn Calendar::observed_date(Self, Date) -> Date
 pub fn Calendar::observed_holidays(Self) -> Array[Date]
 pub fn Calendar::previous_business_day(Self, Date) -> Result[Date, CalendarError]
+pub fn Calendar::query(Self, Date) -> CalendarDayInfo
 pub fn Calendar::region(Self) -> String
 pub fn Calendar::source(Self) -> CalendarSource
 pub fn Calendar::standard() -> Self
+pub fn Calendar::summarize(Self, start~ : Date, end~ : Date) -> Result[CalendarSummary, CalendarValidationError]
 pub fn Calendar::valid_from(Self) -> Date
 pub fn Calendar::valid_to(Self) -> Date
+pub fn Calendar::validate(Self) -> Result[Unit, CalendarValidationError]
 pub fn Calendar::version(Self) -> String
 pub fn Calendar::with_observed_holidays(Self, Array[Date]) -> Result[Self, CalendarVersionError]
 pub fn Calendar::with_version(Self, CalendarVersion) -> Self
+
+pub struct CalendarBuilder {
+  name : String
+  version : String
+  region : String
+  source : CalendarSource
+  valid_from : Date?
+  valid_to : Date?
+  weekend : WeekendPolicy
+  holidays : Array[Date]
+  extra_workdays : Array[Date]
+}
+pub fn CalendarBuilder::build(Self) -> Result[Calendar, CalendarValidationError]
+pub fn CalendarBuilder::extra_workday(Self, Date) -> Self
+pub fn CalendarBuilder::holiday(Self, Date) -> Self
+pub fn CalendarBuilder::new(name~ : String, version~ : String, weekend~ : WeekendPolicy) -> Self
+pub fn CalendarBuilder::region(Self, String) -> Self
+pub fn CalendarBuilder::source(Self, CalendarSource) -> Self
+pub fn CalendarBuilder::valid_during(Self, start~ : Date, end~ : Date) -> Self
+
+pub struct CalendarCatalog {
+  entries : Array[CatalogEntry]
+}
+pub fn CalendarCatalog::add(Self, Calendar) -> Result[Self, CatalogError]
+pub fn CalendarCatalog::find(Self, String, String) -> Calendar?
+pub fn CalendarCatalog::names(Self) -> Array[String]
+pub fn CalendarCatalog::new() -> Self
+pub fn CalendarCatalog::validate(Self) -> Result[Unit, CatalogError]
+
+pub enum CalendarDateFilter {
+  BusinessDays
+  Closures
+  Holidays
+  ObservedHolidays
+  ExtraWorkdays
+} derive(Compare, Eq, @debug.Debug)
+pub fn CalendarDateFilter::business_days() -> Self
+pub fn CalendarDateFilter::closures() -> Self
+pub fn CalendarDateFilter::extra_workdays() -> Self
+pub fn CalendarDateFilter::holidays() -> Self
+pub fn CalendarDateFilter::observed_holidays() -> Self
+
+pub struct CalendarDayInfo {
+  date : Date
+  kind : CalendarDayKind
+  calendar_name : String
+  calendar_version : String
+}
+pub fn CalendarDayInfo::calendar_name(Self) -> String
+pub fn CalendarDayInfo::calendar_version(Self) -> String
+pub fn CalendarDayInfo::date(Self) -> Date
+pub fn CalendarDayInfo::kind(Self) -> CalendarDayKind
+
+pub enum CalendarDayKind {
+  BusinessDay
+  Weekend
+  Holiday
+  ObservedHoliday
+} derive(Compare, Eq, @debug.Debug)
+pub fn CalendarDayKind::to_string(Self) -> String
+
+pub struct CalendarDiff {
+  only_left : Array[Date]
+  only_right : Array[Date]
+  shared : Array[Date]
+  extra_only_left : Array[Date]
+  extra_only_right : Array[Date]
+  observed_only_left : Array[Date]
+  observed_only_right : Array[Date]
+  observed_shared : Array[Date]
+}
+pub fn CalendarDiff::extra_workdays_only_left(Self) -> Array[Date]
+pub fn CalendarDiff::extra_workdays_only_right(Self) -> Array[Date]
+pub fn CalendarDiff::observed_holidays_only_left(Self) -> Array[Date]
+pub fn CalendarDiff::observed_holidays_only_right(Self) -> Array[Date]
+pub fn CalendarDiff::only_left(Self) -> Array[Date]
+pub fn CalendarDiff::only_right(Self) -> Array[Date]
+pub fn CalendarDiff::shared(Self) -> Array[Date]
+pub fn CalendarDiff::shared_observed_holidays(Self) -> Array[Date]
+pub fn CalendarDiff::to_text(Self) -> String
 
 pub enum CalendarError {
   NegativeBusinessDayCount
@@ -62,6 +211,49 @@ pub struct CalendarSource {
 pub fn CalendarSource::name(Self) -> String
 pub fn CalendarSource::new(name~ : String, url~ : String) -> Self
 pub fn CalendarSource::url(Self) -> String
+
+pub struct CalendarSummary {
+  start : Date
+  end : Date
+  total_days : Int
+  business_days : Int
+  weekend_days : Int
+  holiday_days : Int
+  observed_holiday_days : Int
+  extra_workdays : Int
+  first_business : Date?
+  last_business : Date?
+}
+pub fn CalendarSummary::business_days(Self) -> Int
+pub fn CalendarSummary::end(Self) -> Date
+pub fn CalendarSummary::extra_workdays(Self) -> Int
+pub fn CalendarSummary::first_business_day(Self) -> Date?
+pub fn CalendarSummary::holiday_days(Self) -> Int
+pub fn CalendarSummary::last_business_day(Self) -> Date?
+pub fn CalendarSummary::observed_holiday_days(Self) -> Int
+pub fn CalendarSummary::start(Self) -> Date
+pub fn CalendarSummary::total_days(Self) -> Int
+pub fn CalendarSummary::weekend_days(Self) -> Int
+
+pub struct CalendarTimeline {
+  entries : Array[CalendarDayInfo]
+}
+pub fn CalendarTimeline::between(calendar~ : Calendar, start~ : Date, end~ : Date) -> Result[Self, TimelineError]
+pub fn CalendarTimeline::business_day_ratio(Self) -> String
+pub fn CalendarTimeline::business_days(Self) -> Array[CalendarDayInfo]
+pub fn CalendarTimeline::closure_count(Self) -> Int
+pub fn CalendarTimeline::closures(Self) -> Array[CalendarDayInfo]
+pub fn CalendarTimeline::days(Self) -> Array[CalendarDayInfo]
+pub fn CalendarTimeline::first(Self) -> CalendarDayInfo?
+pub fn CalendarTimeline::last(Self) -> CalendarDayInfo?
+pub fn CalendarTimeline::to_csv(Self) -> String
+pub fn CalendarTimeline::to_markdown(Self) -> String
+
+pub enum CalendarValidationError {
+  CalendarMissingName
+  CalendarMissingVersion
+  CalendarInvalidRange
+} derive(Compare, Eq, @debug.Debug)
 
 pub struct CalendarVersion {
   name : String
@@ -85,6 +277,40 @@ pub enum CalendarVersionError {
   ObservationOutOfRange(Date)
 } derive(Compare, Eq, @debug.Debug)
 
+type CatalogEntry
+
+pub enum CatalogError {
+  CatalogDuplicate(String)
+  CatalogInvalid(CalendarValidationError)
+} derive(@debug.Debug)
+
+pub enum CompletionError {
+  CompletionBeforeStart
+} derive(Compare, Eq, @debug.Debug)
+
+pub struct ConstrainedDeadline {
+  start_date : Date
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+  constraints : Array[DeadlineConstraint]
+}
+pub fn ConstrainedDeadline::add_constraint(Self, DeadlineConstraint) -> Result[Self, ConstraintError]
+pub fn ConstrainedDeadline::calculate(Self) -> Result[DeadlineResult, ConstraintError]
+pub fn ConstrainedDeadline::new(start_date~ : Date, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+
+pub enum ConstraintError {
+  ConstraintInvalidRange
+  ConstraintViolation(String)
+  ConstraintDeadlineFailure(DeadlineError)
+} derive(@debug.Debug)
+
+pub enum CursorError {
+  CursorInvalidCount
+  CursorCalendarFailure(CalendarError)
+} derive(@debug.Debug)
+
 pub struct Date {
   year : Int
   month : Int
@@ -93,7 +319,9 @@ pub struct Date {
 pub fn Date::add_days(Self, Int) -> Self
 pub fn Date::add_months(Self, Int) -> Self
 pub fn Date::add_years(Self, Int) -> Self
+pub fn Date::from_ordinal(Int) -> Result[Self, DateError]
 pub fn Date::new(year~ : Int, month~ : Int, day~ : Int) -> Result[Self, DateError]
+pub fn Date::ordinal(Self) -> Int
 pub fn Date::parse(String) -> Result[Self, DateError]
 pub fn Date::to_string(Self) -> String
 pub fn Date::try_add_days(Self, Int) -> Result[Self, DateError]
@@ -139,10 +367,26 @@ pub enum DateRule {
 } derive(@debug.Debug)
 pub fn DateRule::business_days(Int) -> Self
 pub fn DateRule::calendar_days(Int) -> Self
+pub fn DateRule::describe(Self) -> String
+pub fn DateRule::estimated_calendar_days(Self) -> Int
+pub fn DateRule::max_depth(Self) -> Int
 pub fn DateRule::months(Int) -> Self
+pub fn DateRule::node_count(Self) -> Int
+pub fn DateRule::parse(String) -> Result[Self, RuleParseError]
 pub fn DateRule::sequence(Array[Self]) -> Self
+pub fn DateRule::uses_business_days(Self) -> Bool
+pub fn DateRule::validate(Self) -> Result[Unit, RuleError]
 pub fn DateRule::weeks(Int) -> Self
 pub fn DateRule::years(Int) -> Self
+
+pub struct DateSeries {
+  start : Date
+  end : Date
+  step : Int
+}
+pub fn DateSeries::collect(Self) -> Result[Array[Date], SeriesError]
+pub fn DateSeries::contains(Self, Date) -> Bool
+pub fn DateSeries::new(start~ : Date, end~ : Date, step~ : Int) -> Result[Self, SeriesError]
 
 pub struct Deadline {
   start_date : Date
@@ -154,11 +398,51 @@ pub struct Deadline {
 pub fn Deadline::calculate(Self) -> Result[DeadlineResult, DeadlineError]
 pub fn Deadline::new(start_date~ : Date, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
 
+pub enum DeadlineConstraint {
+  Within(Date, Date)
+  MustBeBusinessDay
+  NotCrossingYear
+} derive(Compare, Eq, @debug.Debug)
+pub fn DeadlineConstraint::must_be_business_day() -> Self
+pub fn DeadlineConstraint::not_crossing_year() -> Self
+pub fn DeadlineConstraint::within(start~ : Date, end~ : Date) -> Result[Self, ConstraintError]
+
 pub enum DeadlineError {
   NegativeRuleCount
   CalendarFailure(CalendarError)
   DateFailure(DateError)
 } derive(@debug.Debug)
+
+pub struct DeadlineForecast {
+  start : Date
+  unit : ForecastUnit
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+}
+pub fn DeadlineForecast::calculate(Self, Array[Int]) -> Result[ForecastResult, ForecastError]
+pub fn DeadlineForecast::new(start~ : Date, unit~ : ForecastUnit, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+
+pub struct DeadlineLedger {
+  records : Array[DeadlineRecord]
+}
+pub fn DeadlineLedger::add(Self, DeadlineRecord) -> Result[Self, LedgerError]
+pub fn DeadlineLedger::completed(Self, Date) -> Array[String]
+pub fn DeadlineLedger::due(Self, Date) -> Array[String]
+pub fn DeadlineLedger::find(Self, String) -> DeadlineRecord?
+pub fn DeadlineLedger::new() -> Self
+pub fn DeadlineLedger::overdue(Self, Date) -> Array[String]
+
+pub struct DeadlineMatrix {
+  start : Date
+  rule : DateRule
+  start_rule : StartDateRule
+  extension : ExtensionPolicy
+  scenarios : Array[MatrixScenario]
+}
+pub fn DeadlineMatrix::add_calendar(Self, String, Calendar) -> Result[Self, MatrixError]
+pub fn DeadlineMatrix::calculate(Self) -> Result[MatrixResult, MatrixError]
+pub fn DeadlineMatrix::new(start~ : Date, rule~ : DateRule, start_rule~ : StartDateRule, extension~ : ExtensionPolicy) -> Self
 
 pub struct DeadlinePlan {
   start_date : Date
@@ -171,6 +455,27 @@ pub fn DeadlinePlan::stage(Self, Int) -> Result[PlanStage, PlanError]
 pub fn DeadlinePlan::stage_count(Self) -> Int
 pub fn DeadlinePlan::stages(Self) -> Array[PlanStage]
 pub fn DeadlinePlan::start_date(Self) -> Date
+
+pub struct DeadlineRecord {
+  id : String
+  result : DeadlineResult
+  completed_on : Date?
+}
+pub fn DeadlineRecord::complete(Self, Date) -> Result[Self, CompletionError]
+pub fn DeadlineRecord::id(Self) -> String
+pub fn DeadlineRecord::new(String, DeadlineResult) -> Self
+pub fn DeadlineRecord::result(Self) -> DeadlineResult
+pub fn DeadlineRecord::status(Self, Date) -> DeadlineStatus
+
+pub struct DeadlineRequest {
+  id : String
+  start : Date
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+}
+pub fn DeadlineRequest::new(id~ : String, start~ : Date, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
 
 pub struct DeadlineResult {
   start : Date
@@ -185,13 +490,88 @@ pub struct DeadlineResult {
 } derive(@debug.Debug)
 pub fn DeadlineResult::adjusted_date(Self) -> Date
 pub fn DeadlineResult::adjustment_count(Self) -> Int
+pub fn DeadlineResult::count_kind(Self, StepKind) -> Int
 pub fn DeadlineResult::crossed_month(Self) -> Bool
 pub fn DeadlineResult::crossed_year(Self) -> Bool
 pub fn DeadlineResult::explain(Self) -> String
+pub fn DeadlineResult::has_extension(Self) -> Bool
 pub fn DeadlineResult::original_date(Self) -> Date
 pub fn DeadlineResult::rule(Self) -> DateRule
 pub fn DeadlineResult::start_date(Self) -> Date
+pub fn DeadlineResult::status(Self, Date) -> DeadlineStatus
+pub fn DeadlineResult::step_count(Self) -> Int
+pub fn DeadlineResult::step_notes(Self) -> Array[String]
 pub fn DeadlineResult::steps(Self) -> Array[CalculationStep]
+pub fn DeadlineResult::summary(Self) -> String
+
+pub enum DeadlineService {
+}
+pub fn DeadlineService::evaluate(DeadlineRequest) -> Result[DeadlineRecord, ServiceError]
+
+pub enum DeadlineStatus {
+  Pending
+  DueToday
+  Overdue
+  Completed
+} derive(Compare, Eq, @debug.Debug)
+pub fn DeadlineStatus::completed() -> Self
+pub fn DeadlineStatus::due_today() -> Self
+pub fn DeadlineStatus::overdue() -> Self
+pub fn DeadlineStatus::pending() -> Self
+pub fn DeadlineStatus::to_string(Self) -> String
+
+pub struct DeadlineWindow {
+  start : Date
+  end : Date
+}
+pub fn DeadlineWindow::business_days(Self, Calendar) -> Int
+pub fn DeadlineWindow::calendar_days(Self) -> Int
+pub fn DeadlineWindow::contains(Self, Date) -> Bool
+pub fn DeadlineWindow::end(Self) -> Date
+pub fn DeadlineWindow::intersection(Self, Self) -> Result[Self, WindowError]
+pub fn DeadlineWindow::intersects(Self, Self) -> Bool
+pub fn DeadlineWindow::new(start~ : Date, end~ : Date) -> Result[Self, WindowError]
+pub fn DeadlineWindow::shift(Self, Int) -> Result[Self, WindowError]
+pub fn DeadlineWindow::start(Self) -> Date
+
+pub struct EventContext {
+  entries : Array[EventEntry]
+}
+pub fn EventContext::insert(Self, String, EventSpec) -> Result[Self, EventError]
+pub fn EventContext::new() -> Self
+pub fn EventContext::resolve(Self, String) -> Result[Date, EventError]
+
+pub struct EventDeadline {
+  event : String
+  rule : DateRule
+  start_rule : StartDateRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+}
+pub fn EventDeadline::calculate(Self, EventContext) -> Result[DeadlineResult, EventDeadlineError]
+pub fn EventDeadline::new(event~ : String, rule~ : DateRule, start_rule~ : StartDateRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Self
+
+pub enum EventDeadlineError {
+  Event(EventError)
+  Deadline(DeadlineError)
+} derive(@debug.Debug)
+
+type EventEntry
+
+pub enum EventError {
+  EventDuplicate(String)
+  EventMissing(String)
+  EventCycle(String)
+  EventNegativeOffset(String)
+  EventDateFailure(DateError)
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum EventSpec {
+  Fixed(Date)
+  After(String, Int)
+} derive(Compare, Eq, @debug.Debug)
+pub fn EventSpec::after(String, Int) -> Self
+pub fn EventSpec::fixed(Date) -> Self
 
 pub enum ExtensionPolicy {
   NoExtension
@@ -203,6 +583,64 @@ pub fn ExtensionPolicy::following() -> Self
 pub fn ExtensionPolicy::modified_following() -> Self
 pub fn ExtensionPolicy::no_extension() -> Self
 pub fn ExtensionPolicy::preceding() -> Self
+
+pub enum ForecastError {
+  ForecastEmpty
+  ForecastNegativeCount
+  ForecastDeadlineFailure(DeadlineError)
+} derive(@debug.Debug)
+
+pub struct ForecastResult {
+  counts : Array[Int]
+  dates : Array[Date]
+}
+pub fn ForecastResult::counts(Self) -> Array[Int]
+pub fn ForecastResult::dates(Self) -> Array[Date]
+pub fn ForecastResult::get(Self, Int) -> Date?
+
+pub enum ForecastUnit {
+  CalendarDays
+  BusinessDays
+  Weeks
+  Months
+  Years
+} derive(Compare, Eq, @debug.Debug)
+pub fn ForecastUnit::business_days() -> Self
+pub fn ForecastUnit::calendar_days() -> Self
+pub fn ForecastUnit::months() -> Self
+pub fn ForecastUnit::weeks() -> Self
+pub fn ForecastUnit::years() -> Self
+
+pub enum LedgerError {
+  LedgerDuplicate(String)
+} derive(Compare, Eq, @debug.Debug)
+
+type MatrixEntry
+
+pub enum MatrixError {
+  MatrixDuplicate(String)
+  MatrixEmpty
+  MatrixMissing(String)
+  MatrixDeadlineFailure(DeadlineError)
+} derive(@debug.Debug)
+
+pub struct MatrixResult {
+  entries : Array[MatrixEntry]
+}
+pub fn MatrixResult::delta(Self, String, String) -> Result[Int, MatrixError]
+pub fn MatrixResult::get(Self, String) -> DeadlineResult?
+pub fn MatrixResult::ordered(Self) -> Array[String]
+
+type MatrixScenario
+
+pub struct ObligationSchedule {
+  start : Date
+  rule : ScheduleRule
+  calendar : Calendar
+  extension : ExtensionPolicy
+}
+pub fn ObligationSchedule::new(start~ : Date, rule~ : ScheduleRule, calendar~ : Calendar, extension~ : ExtensionPolicy) -> Result[Self, ScheduleError]
+pub fn ObligationSchedule::occurrences(Self, Int) -> Result[Array[Date], ScheduleError]
 
 pub enum PlanError {
   EmptyStageLabel
@@ -256,6 +694,69 @@ pub fn PlanStageResult::label(Self) -> String
 pub fn PlanStageResult::original_date(Self) -> Date
 pub fn PlanStageResult::start_date(Self) -> Date
 
+pub enum ReminderError {
+  ReminderNegativeOffset
+  ReminderDuplicateOffset
+  ReminderDateFailure
+} derive(@debug.Debug)
+
+pub struct ReminderPlan {
+  result : DeadlineResult
+  calendar : Calendar
+  rules : Array[ReminderRule]
+}
+pub fn ReminderPlan::add(Self, ReminderRule) -> Result[Self, ReminderError]
+pub fn ReminderPlan::calculate(Self) -> Result[Array[Date], ReminderError]
+pub fn ReminderPlan::new(DeadlineResult, Calendar) -> Self
+
+pub enum ReminderRule {
+  CalendarDaysBefore(Int)
+  BusinessDaysBefore(Int)
+} derive(Compare, Eq, @debug.Debug)
+pub fn ReminderRule::business_days_before(Int) -> Result[Self, ReminderError]
+pub fn ReminderRule::calendar_days_before(Int) -> Result[Self, ReminderError]
+
+pub enum RuleError {
+  RuleNegativeCount
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum RuleParseError {
+  RuleInvalidFormat
+  RuleInvalidNumber(String)
+  RuleUnknownUnit(String)
+  RuleParseNegativeCount
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum ScheduleError {
+  ScheduleInvalidInterval
+  ScheduleInvalidCount
+  ScheduleDateFailure(DateError)
+  ScheduleCalendarFailure(CalendarError)
+} derive(@debug.Debug)
+
+pub enum ScheduleRule {
+  EveryCalendarDays(Int)
+  EveryBusinessDays(Int)
+  WeeklyOn(Weekday, Int)
+  MonthlyOn(Int, Int)
+} derive(Compare, Eq, @debug.Debug)
+pub fn ScheduleRule::every_business_days(Int) -> Self
+pub fn ScheduleRule::every_calendar_days(Int) -> Self
+pub fn ScheduleRule::monthly_on(day~ : Int, interval~ : Int) -> Self
+pub fn ScheduleRule::weekly_on(weekday~ : Weekday, interval~ : Int) -> Self
+
+pub enum SeriesError {
+  SeriesInvalidStep
+  SeriesReversed
+  SeriesOutOfRange
+} derive(Compare, Eq, @debug.Debug)
+
+pub enum ServiceError {
+  ServiceInvalidId
+  ServiceInvalidRule(RuleError)
+  ServiceDeadlineFailure(DeadlineError)
+} derive(@debug.Debug)
+
 pub enum StageStartSource {
   PreviousAdjusted
   PreviousOriginal
@@ -276,6 +777,10 @@ pub enum StepKind {
   Extension
   Complete
 } derive(Compare, Eq, @debug.Debug)
+pub fn StepKind::complete() -> Self
+pub fn StepKind::count() -> Self
+pub fn StepKind::extension() -> Self
+pub fn StepKind::start() -> Self
 
 pub enum SuspensionError {
   Reversed
@@ -311,6 +816,11 @@ pub fn SuspensionSet::normalize(Self) -> Self
 pub fn SuspensionSet::periods(Self) -> Array[SuspensionPeriod]
 pub fn SuspensionSet::policy(Self) -> SuspensionPolicy
 
+pub enum TimelineError {
+  TimelineReversed
+  TimelineOutOfRange
+} derive(Compare, Eq, @debug.Debug)
+
 pub enum Weekday {
   Monday
   Tuesday
@@ -320,8 +830,15 @@ pub enum Weekday {
   Saturday
   Sunday
 } derive(Compare, Eq, @debug.Debug)
+pub fn Weekday::friday() -> Self
 pub fn Weekday::is_monday(Self) -> Bool
+pub fn Weekday::monday() -> Self
+pub fn Weekday::saturday() -> Self
+pub fn Weekday::sunday() -> Self
+pub fn Weekday::thursday() -> Self
 pub fn Weekday::to_string(Self) -> String
+pub fn Weekday::tuesday() -> Self
+pub fn Weekday::wednesday() -> Self
 
 pub enum WeekendPolicy {
   SaturdaySunday
@@ -333,7 +850,11 @@ pub fn WeekendPolicy::is_weekend(Self, Weekday) -> Bool
 pub fn WeekendPolicy::no_weekend() -> Self
 pub fn WeekendPolicy::saturday_sunday() -> Self
 
+pub enum WindowError {
+  WindowReversed
+  WindowOutOfRange
+} derive(Compare, Eq, @debug.Debug)
+
 // Type aliases
 
 // Traits
-

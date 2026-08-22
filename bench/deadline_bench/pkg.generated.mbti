@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "chyppi/moonbit-deadline/bench/deadline_bench"
+
+// Values
+pub fn render_case(String, Int, Int) -> String
+
+pub fn render_suite(Array[BenchmarkCase]) -> String
+
+// Errors
+
+// Types and methods
+pub struct BenchmarkCase {
+  name : String
+  iterations : Int
+  checksum : Int
+}
+pub fn BenchmarkCase::line(Self) -> String
+pub fn BenchmarkCase::new(name~ : String, iterations~ : Int, checksum~ : Int) -> Self
+
+// Type aliases
+
+// Traits

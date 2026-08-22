@@ -18,6 +18,48 @@ pub fn Weekday::is_monday(self : Weekday) -> Bool {
 }
 
 ///|
+/// Construct a Monday weekday value for recurring schedules.
+pub fn Weekday::monday() -> Weekday {
+  Monday
+}
+
+///|
+/// Construct a Tuesday weekday value for recurring schedules.
+pub fn Weekday::tuesday() -> Weekday {
+  Tuesday
+}
+
+///|
+/// Construct a Wednesday weekday value for recurring schedules.
+pub fn Weekday::wednesday() -> Weekday {
+  Wednesday
+}
+
+///|
+/// Construct a Thursday weekday value for recurring schedules.
+pub fn Weekday::thursday() -> Weekday {
+  Thursday
+}
+
+///|
+/// Construct a Friday weekday value for recurring schedules.
+pub fn Weekday::friday() -> Weekday {
+  Friday
+}
+
+///|
+/// Construct a Saturday weekday value for recurring schedules.
+pub fn Weekday::saturday() -> Weekday {
+  Saturday
+}
+
+///|
+/// Construct a Sunday weekday value for recurring schedules.
+pub fn Weekday::sunday() -> Weekday {
+  Sunday
+}
+
+///|
 pub fn Weekday::to_string(self : Weekday) -> String {
   match self {
     Monday => "Monday"

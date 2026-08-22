@@ -44,3 +44,29 @@ test "cli rejects malformed rules" {
     Err(_) => inspect(true, content="true")
   }
 }
+
+///|
+test "cli parses table output format" {
+  match
+    parse_cli_arguments([
+      "--start", "2026-08-07", "--rule", "calendar-days:2", "--format", "table",
+    ]) {
+    Ok(config) =>
+      match config.format {
+        Table => inspect(true, content="true")
+        _ => inspect(false, content="true")
+      }
+    Err(_) => inspect(false, content="true")
+  }
+}
+
+///|
+test "cli rejects unknown output formats" {
+  match
+    parse_cli_arguments([
+      "--start", "2026-08-07", "--rule", "calendar-days:2", "--format", "csv",
+    ]) {
+    Err(InvalidOption(value)) => inspect(value, content="--format=csv")
+    _ => inspect(false, content="true")
+  }
+}

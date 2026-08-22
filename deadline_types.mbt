@@ -7,6 +7,26 @@ pub enum StepKind {
 } derive(Debug, Eq, Compare)
 
 ///|
+pub fn StepKind::start() -> StepKind {
+  Start
+}
+
+///|
+pub fn StepKind::count() -> StepKind {
+  Count
+}
+
+///|
+pub fn StepKind::extension() -> StepKind {
+  Extension
+}
+
+///|
+pub fn StepKind::complete() -> StepKind {
+  Complete
+}
+
+///|
 pub struct CalculationStep {
   kind : StepKind
   date : Date
@@ -111,4 +131,50 @@ pub fn DeadlineResult::steps(self : DeadlineResult) -> Array[CalculationStep] {
 ///|
 pub fn DeadlineResult::explain(self : DeadlineResult) -> String {
   self.explanation
+}
+
+///|
+/// Number of recorded calculation steps.
+pub fn DeadlineResult::step_count(self : DeadlineResult) -> Int {
+  self.steps.length()
+}
+
+///|
+/// Whether the result contains an extension step.
+pub fn DeadlineResult::has_extension(self : DeadlineResult) -> Bool {
+  for step in self.steps {
+    if step.kind() == Extension {
+      return true
+    }
+  }
+  false
+}
+
+///|
+/// Compact start-to-adjusted summary for logs and table rows.
+pub fn DeadlineResult::summary(self : DeadlineResult) -> String {
+  self.start.to_string() + " -> " + self.adjusted.to_string()
+}
+
+///|
+/// Return one note per recorded calculation step.
+pub fn DeadlineResult::step_notes(self : DeadlineResult) -> Array[String] {
+  [
+    for step in self.steps => step.note()
+  ]
+}
+
+///|
+/// Count steps with a selected semantic kind.
+pub fn DeadlineResult::count_kind(
+  self : DeadlineResult,
+  kind : StepKind,
+) -> Int {
+  let mut count = 0
+  for step in self.steps {
+    if step.kind() == kind {
+      count = count + 1
+    }
+  }
+  count
 }

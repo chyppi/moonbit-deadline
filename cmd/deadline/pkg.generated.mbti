@@ -23,6 +23,7 @@ pub struct CliConfig {
   calendar : String
   extension : @moonbit-deadline.ExtensionPolicy
   explain : Bool
+  format : OutputFormat
 }
 
 pub enum CliError {
@@ -33,7 +34,11 @@ pub enum CliError {
   InvalidDate(@moonbit-deadline.DateError)
 } derive(@debug.Debug)
 
+pub enum OutputFormat {
+  Text
+  Table
+} derive(Compare, Eq, @debug.Debug)
+
 // Type aliases
 
 // Traits
-

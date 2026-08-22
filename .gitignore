@@ -2,3 +2,6 @@ _build/
 .moon/
 *.tmp
 *.log
+trace.json
+.firecrawl/
+.superpowers/

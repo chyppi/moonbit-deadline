@@ -37,16 +37,33 @@ jobs:
           irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
           "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-      - name: Show toolchain
+      - name: Show toolchain and update dependencies
         run: |
           moon version --all
           moon update
 
-      - name: Check all targets
+      - name: Check all MoonBit targets
         run: moon check --target all --deny-warn
 
-      - name: Test all targets
+      - name: Build all targets on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: moon build --target all --deny-warn
+
+      - name: Build portable target on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: moon build --target wasm-gc --deny-warn
+
+      - name: Test all targets on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
         run: moon test --target all --deny-warn
+
+      - name: Test portable targets on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          moon test --target wasm --deny-warn
+          moon test --target wasm-gc --deny-warn
+          moon test --target js --deny-warn
 
       - name: CLI smoke test
         run: moon run cmd/deadline -- --start 2026-08-07 --rule business-days:5 --exclude-start --extension following --explain
@@ -57,4 +74,4 @@ jobs:
           moon fmt
           git diff --exit-code
           moon info
-          git diff --ignore-blank-lines --exit-code
+          git diff --exit-code

@@ -6,7 +6,14 @@ pub struct CliConfig {
   calendar : String
   extension : @lib.ExtensionPolicy
   explain : Bool
+  format : OutputFormat
 }
+
+///|
+pub enum OutputFormat {
+  Text
+  Table
+} derive(Debug, Eq, Compare)
 
 ///|
 pub enum CliError {
@@ -97,6 +104,7 @@ pub fn parse_cli_arguments(args : Array[String]) -> Result[CliConfig, CliError] 
   let mut extension_text = "none"
   let mut exclude_start = false
   let mut explain = false
+  let mut format = Text
   while index < args.length() {
     match args[index] {
       "--start" => {
@@ -129,6 +137,17 @@ pub fn parse_cli_arguments(args : Array[String]) -> Result[CliConfig, CliError] 
       }
       "--exclude-start" => exclude_start = true
       "--explain" => explain = true
+      "--format" => {
+        index = index + 1
+        if index >= args.length() {
+          return Err(MissingOption("--format"))
+        }
+        format = match args[index] {
+          "text" => Text
+          "table" => Table
+          value => return Err(InvalidOption("--format=" + value))
+        }
+      }
       "--help" => return Err(InvalidOption("help"))
       option => return Err(InvalidOption(option))
     }
@@ -152,7 +171,7 @@ pub fn parse_cli_arguments(args : Array[String]) -> Result[CliConfig, CliError] 
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  Ok({ start, rule, exclude_start, calendar, extension, explain })
+  Ok({ start, rule, exclude_start, calendar, extension, explain, format })
 }
 
 ///|
@@ -199,14 +218,18 @@ pub fn execute(args : Array[String]) -> Result[String, CliError] {
   )
   match deadline.calculate() {
     Ok(result) =>
-      if config.explain {
-        Ok(result.explain())
-      } else {
-        Ok(
-          result.original_date().to_string() +
-          " -> " +
-          result.adjusted_date().to_string(),
-        )
+      match config.format {
+        Table => Ok(@lib.AuditReport::from_result(result, calendar).to_table())
+        Text =>
+          if config.explain {
+            Ok(@lib.AuditReport::from_result(result, calendar).to_text())
+          } else {
+            Ok(
+              result.original_date().to_string() +
+              " -> " +
+              result.adjusted_date().to_string(),
+            )
+          }
       }
     Err(_) => Err(InvalidOption("deadline calculation failed"))
   }

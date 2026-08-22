@@ -1,94 +1,110 @@
 # moonbit-deadline
 
-面向法律、合同和合规流程的 MoonBit 期限计算库。它把“如何计日”和“遇到非工作日怎么办”拆成可组合规则，并允许调用方注入司法辖区、机构或合同自己的工作日历。
+`moonbit-deadline` 是一个纯 MoonBit 的法律、合同和合规期限计算库。它把起算事件、计数规则、工作日历、顺延策略、暂停区间和审计输出组合成可复用的确定性 API。
 
-## 解决的问题
+它只计算日期，不提供法律意见。使用者应自行确认适用法域、送达规则、法院日历和合同条款，并注入经过审核的日历数据。
 
-- 自然日、工作日、周、月、年和多级期限计算
-- 起算日计入或排除
-- 周末、节假日和调休工作日
-- Following、Modified Following、Preceding 和不顺延策略
-- 可审计的计算步骤与解释文本
-- 同一套核心 API 供 MoonBit 程序和命令行使用
+## 特性
 
-本项目是确定性计算库，不提供法律意见。生产使用时应由业务方确认适用法域、送达规则、法院日历和合同条款，并通过 `Calendar::new` 注入经过审核的数据。
+- 自然日、工作日、周、月、年和序列期限。
+- 起算日计入/排除、Following、Modified Following 和 Preceding 顺延。
+- 可注入周末、节假日、调休、观察日、版本和来源的工作日历。
+- 事件起算、暂停区间、批量依赖计划、跨日历矩阵和期限预测。
+- 期限窗口、约束校验、完成回执、状态台账和提醒计划。
+- 日历统计、差异比较、时间线 CSV/Markdown、审计文本/表格/CSV 输出。
+- MoonBit 库 API、命令行示例和独立 benchmark workload。
 
 ## 快速开始
 
-运行一个“起算日不计入、顺延到下一个工作日”的工作日期限：
+运行一个“起算日不计入、顺延到下一个工作日”的期限：
 
 ```bash
 moon run cmd/deadline -- --start 2026-08-07 --rule business-days:5 --exclude-start --extension following --explain
 ```
 
-输出示例：
+规则格式为 `calendar-days:N`、`business-days:N`、`weeks:N`、`months:N` 或 `years:N`；逗号可以串联多个阶段。
 
 ```text
-2026-08-07 — start date
-2026-08-14 — business days: 5
-2026-08-14 — deadline
+calendar=standard
+version=builtin
+region=
+source=
+source_url=
+start=2026-08-07
+original=2026-08-14
+adjusted=2026-08-14
+adjustments=0
+crossed_month=false
+crossed_year=false
 ```
 
-规则格式为 `calendar-days:N`、`business-days:N`、`weeks:N`、`months:N` 或 `years:N`。使用逗号可以串联多个阶段，例如 `calendar-days:3,business-days:2`。
+表格输出：
+
+```bash
+moon run cmd/deadline -- --start 2026-08-07 --rule business-days:5 --exclude-start --format table
+```
 
 ## 库 API
 
 ```moonbit
-// In a dependent package, import { "chyppi/moonbit-deadline" @deadline, }
 let calendar = @deadline.Calendar::china_2026()
 let deadline = @deadline.Deadline::new(
-  start_date=Date::parse("2026-04-30").unwrap(),
+  start_date=@deadline.Date::parse("2026-04-30").unwrap(),
   rule=@deadline.DateRule::business_days(1),
   start_rule=@deadline.StartDateRule::exclude(),
   calendar~,
   extension=@deadline.ExtensionPolicy::following(),
 )
 let result = deadline.calculate().unwrap()
-println(result.explain())
+println(result.summary())
+println(@deadline.AuditReport::from_result(result, calendar).to_text())
 ```
 
-核心类型：
+模块名是 `chyppi/moonbit-deadline`。核心类型包括 `Date`、`DateRule`、`Deadline`、`Calendar`、`EventContext`、`BatchDeadline`、`DeadlineRecord` 和 `AuditReport`。
 
-- `DateRule`：期限的计数规则，支持 `Sequence`
-- `Deadline`：绑定起算日、规则、日历和顺延策略
-- `Calendar`：周末政策、节假日和额外工作日
-- `ExtensionPolicy`：届满日调整策略
+## 日历数据
 
-## 日历数据来源
+`Calendar::china_2026()` 是可复现的示例 fixture，版本标记为 `2025-11-04`，日期来自国务院办公厅节假日安排通知的北京市人民政府转载页面：[官方政策页面](https://www.beijing.gov.cn/gate/big5/www.beijing.gov.cn/zhengce/zhengcefagui/202511/t20251104_4258873.html)。它不代表所有地区、法院、行业或合同的完整日历。
 
-`Calendar::china_2026()` 是一个可复现的示例 fixture，版本标记为 `2025-11-04`，日期来自国务院办公厅《关于 2026 年部分节假日安排的通知》：[北京市人民政府转载的官方政策页面](https://www.beijing.gov.cn/gate/big5/www.beijing.gov.cn/zhengce/zhengcefagui/202511/t20251104_4258873.html)。它不代表所有地区、法院、行业或合同的完整工作日历；请勿直接把它当作法律结论。
+业务方可以使用 `CalendarBuilder` 构建自定义日历，使用 `CalendarCatalog` 管理多个版本，并用 `Calendar::diff` 检查数据更新。
 
-命令行可以选择它：
+## Benchmark
+
+benchmark 运行真实的日历查询、工作日期限和批量期限计算，并输出 checksum，避免空循环被误计为性能结果：
 
 ```bash
-moon run cmd/deadline -- --start 2026-04-30 --rule business-days:1 --exclude-start --calendar china-2026
+moon run bench/deadline_bench -- --iterations 10
 ```
 
-## 开发与验收
+本地一次运行（Moon 0.1.20260814 / Moonc 0.10.8，100 次迭代）得到：
+
+```text
+case=calendar iterations=100 checksum=48818044
+case=deadline iterations=100 checksum=73967272
+case=batch iterations=100 checksum=73983800
+```
+
+耗时应由运行机器的外层命令测量；以上 checksum 用于确认 workload 确实完成了计算。
+
+## 开发与验证
 
 ```bash
-moon check --deny-warn
-moon test --deny-warn
+moon check --target all --deny-warn
+moon test --target wasm-gc --deny-warn
 moon run cmd/deadline -- --start 2026-08-07 --rule business-days:5 --exclude-start --extension following --explain
-moon fmt --check
+moon run bench/deadline_bench -- --iterations 100
+moon fmt
 moon info
 git diff --exit-code
 ```
 
-CI 参考 [moonbit-community/.github 的 check workflow 模板](https://github.com/moonbit-community/.github/tree/main/workflow-templates)，覆盖 Linux、macOS 和 Windows，并执行全目标检查、测试、格式化、信息生成和 CLI 冒烟测试。
+`scripts/audit.ps1` 会输出工具链版本、有效 `.mbt` 文件规模、测试数、远程默认分支和工作区状态。有效规模统计排除 `_build`、`.moon`、缓存和 `pkg.generated.mbti`。
 
-当前开发环境为 `moon 0.1.20260713` / `moonc 0.10.4`。该版本支持 `check/test --deny-warn`，但尚不接受 `fmt/info --deny-warn` 参数；因此仓库对后两项使用官方模板同等严格的“运行命令后检查 `git diff`”流程。升级到支持该参数的工具链后，可将 CI 中对应命令直接替换为带 `--deny-warn` 的形式。
+CI 使用 MoonBit stable 安装脚本，覆盖 Linux、macOS 和 Windows；Linux/macOS 运行全目标检查，Windows 运行 wasm、wasm-gc 和 js 便携目标，并统一执行格式化和接口生成差异门禁。Windows native 目标依赖运行器提供兼容的 MSVC/Clang C 工具链。
 
-## 项目边界与路线
+## 贡献
 
-当前实现聚焦确定性日期算术和可注入日历，后续可扩展：
-
-1. 合同约定的自定义工作周和截止时刻
-2. 多法域日历与日历版本管理
-3. 期限事件的结构化 JSON/表格输出
-4. 更细的“送达日、起算事件、暂停/中止”规则模型
-
-节假日数据不内置为全球常量，避免把不断变化的外部事实伪装成稳定算法。
+请为规则、日历数据和边界行为添加聚焦测试。日历数据变更应记录适用地区、来源和有效版本。提交前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 许可证
 

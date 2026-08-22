@@ -1,0 +1,33 @@
+name: Benchmark workload
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: Number of deterministic workload iterations
+        required: false
+        default: "100"
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install MoonBit
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Run deterministic workload
+        shell: bash
+        env:
+          ITERATIONS: ${{ inputs.iterations }}
+        run: |
+          moon version --all
+          moon update
+          moon run bench/deadline_bench -- --iterations "$ITERATIONS"
