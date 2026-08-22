@@ -11,9 +11,9 @@
 验收结果：
 
 - Mooncakes `chyppi/moonbit-deadline@0.1.0` 已通过校验并发布；申报书和内部计划文件未进入发布归档。
-- 验收提交 `6aeee4b02ad40d2909bf8fdfd17f3f67a9fbef86` 已推送到 GitHub `main`。
-- GitHub Actions run `32561516037` 的 Ubuntu、macOS 和 Windows jobs 均通过。
-- 当前 Windows 使用 MinGW `cc.exe` 时，MoonBit runtime native 目标因 `rand_s` 声明不兼容失败；这不是仓库 MoonBit 源码诊断错误，CI 已对 Windows 采用 wasm/wasm-gc/js 便携目标，Unix 保留全目标验证。
+- 验收提交 `5a236e26b554f51d5bb88407b0f08de702ecdf64` 已推送到 GitHub `main`。
+- GitHub Actions run `32562757657` 的 Ubuntu、macOS 和 Windows jobs 均通过。
+- 本次清理 `_build` 后，Windows MinGW native 测试和构建均已通过；此前记录的 `rand_s` 错误在当前工具链状态下已不再复现。
 
 ## 已检查证据
 
@@ -43,21 +43,18 @@ files=128 lines=9983 tests=273
 | `moon test --target wasm --deny-warn` | 273/273 通过 |
 | `moon test --target wasm-gc --deny-warn` | 273/273 通过 |
 | `moon test --target js --deny-warn` | 273/273 通过 |
+| `moon test --target native --deny-warn` | 273/273 通过 |
+| `moon test --target all --deny-warn` | 四目标全部通过 |
 | `moon build --target wasm --deny-warn` | 通过 |
 | `moon build --target wasm-gc --deny-warn` | 通过 |
 | `moon build --target js --deny-warn` | 通过 |
+| `moon build --target native --deny-warn` | 通过 |
+| `moon build --target all --deny-warn` | 四目标全部通过 |
 | `moon fmt` | 通过 |
 | `moon info` | 通过并刷新接口文件 |
 | CLI text/table smoke test | 通过 |
 
-Windows native 的实际失败为：
-
-```text
-C:\Users\gunter\.moon\lib\runtime\env.c:181:9:
-error: implicit declaration of function 'rand_s'
-```
-
-verbose 命令确认编译器为 `C:\mingw64\bin\cc.exe`。因此没有把 native 失败伪装成通过，也没有修改 MoonBit 安装目录中的 runtime 文件。
+本次 native 复核使用 `C:\mingw64\bin\cc.exe`，在执行 `moon clean` 后重新构建，`moon test --target native --deny-warn` 和 `moon build --target native --deny-warn` 均通过；未修改 MoonBit 安装目录中的 runtime 文件。
 
 ### README、许可证和结构
 
@@ -98,7 +95,7 @@ batch: 73983800
 
 ## 结论分类
 
-- 已满足：有效 MoonBit 源码规模、可移植目标 check/test/build、边界测试、CLI、benchmark、README、MIT 许可证、来源说明、CI 配置和默认分支只读审计。
-- 已知环境问题：当前 Windows MinGW native runtime 的 `rand_s` 声明兼容性。
+- 已满足：有效 MoonBit 源码规模、四目标 check/test/build、边界测试、CLI、benchmark、README、MIT 许可证、来源说明、CI 配置和默认分支只读审计。
+- native 环境复核：此前 Windows MinGW 的 `rand_s` 错误本次已不再复现，当前本地四目标验证全部通过。
 - GitHub 推送和 Mooncakes 发布均已完成；本报告记录的是最终本地与远程验收证据。
 - 严格自查后移除了公开仓库中的过期过程文件 `findings.md`、`progress.md` 和 `task_plan.md`；正式工程信息保留在 README、CHANGELOG、设计说明和本报告中。
